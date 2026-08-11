@@ -1,39 +1,114 @@
-"use client";
-import { motion, AnimatePresence } from "framer-motion";
-import { FadeIn } from "../ui/FadeIn";
-import { ProjectCard } from "../ui/ProjectCard";
-import { projectsData } from "@/data/projects";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { projectsData, type Project } from "@/data/projects";
+import { TiltCard } from "@/components/motion/TiltCard";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { Counter } from "@/components/motion/Counter";
+import { GhostMark } from "@/components/motion/GhostMark";
+
+function CardVisual({ project }: { project: Project }) {
+  const isScreenshot =
+    Boolean(project.cardImage) && project.cardImage !== project.image;
+  const src = project.cardImage ?? project.image;
+
+  if (!src) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center">
+        <span className="text-[clamp(3rem,7vw,4.5rem)] font-medium leading-none text-gradient">
+          <Counter to={80} />
+        </span>
+        <span className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/45">
+          concurrent players, live
+        </span>
+      </div>
+    );
+  }
+
+  if (isScreenshot) {
+    return (
+      <Image
+        src={src}
+        alt={`${project.title} preview`}
+        width={900}
+        height={675}
+        className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+      />
+    );
+  }
+
+  return (
+    <div className="relative flex h-full w-full items-center justify-center bg-[radial-gradient(ellipse_at_center,rgba(59,157,255,0.28),transparent_70%)]">
+      <Image
+        src={src}
+        alt={project.title}
+        width={420}
+        height={420}
+        className="h-[72%] w-auto max-w-[78%] object-contain drop-shadow-[0_16px_48px_rgba(59,157,255,0.45)] transition-transform duration-700 group-hover:scale-[1.05]"
+      />
+    </div>
+  );
+}
 
 export function Projects() {
-  return (
-    <section id="projects" className="py-24 relative border-t border-white/5 bg-background">
-      <div className="container mx-auto px-6 md:px-12">
-        <FadeIn>
-          <div className="mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-2">Projects</h2>
-            <div className="w-20 h-1 bg-accent rounded-full"></div>
-          </div>
-        </FadeIn>
+  const rest = projectsData.filter((p) => p.slug !== "deepfract");
 
-        <motion.div 
-          layout
-          className="grid md:grid-cols-2 gap-8 mt-12"
-        >
-          <AnimatePresence mode="popLayout">
-            {projectsData.map((project, index) => (
-              <motion.div
-                key={project.slug}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ProjectCard {...project} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+  return (
+    <section className="relative overflow-hidden border-t border-border-subtle py-20 md:py-32">
+      <GhostMark className="right-0 top-8 w-full" from={8} to={-16}>
+        SELECTED WORK
+      </GhostMark>
+
+      <div className="container relative mx-auto px-5 sm:px-6 md:px-12">
+        <Reveal variant="mask">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4 md:mb-14">
+            <h2 className="text-[clamp(1.75rem,6vw,3.25rem)] font-medium tracking-tight">
+              Also built
+            </h2>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+              {String(rest.length).padStart(2, "0")} projects
+            </p>
+          </div>
+        </Reveal>
+
+        <RevealGroup className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {rest.map((project) => (
+            <RevealItem key={project.slug} variant="scale" className="h-full">
+              <TiltCard className="h-full">
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="glass edge-light sheen group flex h-full flex-col overflow-hidden transition-colors duration-300 hover:border-accent/40"
+                >
+                  <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-border-subtle bg-[#070b12] [transform:translateZ(0)]">
+                    <CardVisual project={project} />
+                  </div>
+
+                  <div className="flex flex-1 flex-col p-6">
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <h3 className="text-2xl font-medium tracking-tight transition-colors duration-300 group-hover:text-accent">
+                        {project.title}
+                      </h3>
+                      <ArrowUpRight
+                        size={18}
+                        className="mt-1 shrink-0 text-foreground/30 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+                      />
+                    </div>
+
+                    <p className="mb-6 flex-1 text-sm leading-relaxed text-foreground/60">
+                      {project.description}
+                    </p>
+
+                    <ul className="flex flex-wrap gap-x-3 gap-y-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-foreground/40">
+                      {project.tags.slice(0, 4).map((tag) => (
+                        <li key={tag}>{tag}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </Link>
+              </TiltCard>
+            </RevealItem>
+          ))}
+        </RevealGroup>
       </div>
     </section>
   );

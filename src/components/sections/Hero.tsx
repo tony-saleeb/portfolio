@@ -1,111 +1,168 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useTransform } from "framer-motion";
+import { useRef } from "react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { AuroraField } from "@/components/ui/AuroraField";
+import { Magnetic } from "@/components/motion/Magnetic";
+import { useIsMobile } from "@/hooks/useMediaQuery";
+import { useScrollTarget } from "@/hooks/useScrollTarget";
+import { useScrollMotion } from "@/hooks/useScrollMotion";
 
-const titles = [
-  "Full-Stack Developer",
-  "Mobile Developer",
-  "AI-Enhanced App Builder",
-];
+const NAME = "Antony Saleeb";
 
 export function Hero() {
-  const [titleIndex, setTitleIndex] = useState(0);
-  const { scrollY } = useScroll();
-  
-  // Parallax effects
-  const yBg = useTransform(scrollY, [0, 1000], [0, 300]);
-  const yText = useTransform(scrollY, [0, 800], [0, 200]);
-  const opacityText = useTransform(scrollY, [0, 400], [1, 0]);
+  const ref = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+  const mobile = useIsMobile();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTitleIndex((prev) => (prev + 1) % titles.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  const { scrollYProgress } = useScrollTarget(ref, ["start start", "end start"]);
+  const p = useScrollMotion(scrollYProgress);
+
+  // Strong enough to feel cinematic; not so extreme it tears on a phone refresh.
+  const amp = mobile ? 1.05 : 1;
+  const auroraY = useTransform(p, [0, 1], ["0%", reduced ? "0%" : `${30 * amp}%`]);
+  const auroraScale = useTransform(p, [0, 1], [1, reduced ? 1 : 1 + 0.28 * amp]);
+  const ghostX = useTransform(p, [0, 1], ["0%", reduced ? "0%" : `${-14 * amp}%`]);
+  const eyebrowY = useTransform(p, [0, 1], ["0%", reduced ? "0%" : `${-100 * amp}%`]);
+  const titleY = useTransform(p, [0, 1], ["0%", reduced ? "0%" : `${-55 * amp}%`]);
+  const bodyY = useTransform(p, [0, 1], ["0%", reduced ? "0%" : `${-90 * amp}%`]);
+  const ctaY = useTransform(p, [0, 1], ["0%", reduced ? "0%" : `${-130 * amp}%`]);
+  const fade = useTransform(p, [0, 0.7], [1, reduced ? 1 : 0]);
+  // Scroll-linked blur is a GPU tax on mobile — opacity-only fade instead.
+  const blur = useTransform(
+    p,
+    [0, 1],
+    ["blur(0px)", reduced || mobile ? "blur(0px)" : "blur(5px)"]
+  );
 
   return (
     <section
+      ref={ref}
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
+      className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-[max(5rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]"
     >
-      {/* Background Effects */}
-      <motion.div className="absolute inset-0 z-0" style={{ y: yBg }}>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/20 rounded-full blur-[128px] pointer-events-none"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[128px] pointer-events-none"></div>
-      </motion.div>
-
-      <motion.div 
-        className="container mx-auto px-6 md:px-12 relative z-10 text-center"
-        style={{ y: yText, opacity: opacityText }}
+      <motion.div
+        style={{ y: auroraY, scale: auroraScale, willChange: "transform", backfaceVisibility: "hidden" }}
+        className="absolute inset-0 -z-30 origin-top"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-4 text-foreground">
-            Antony Saleeb
-          </h1>
-        </motion.div>
-
-        <div className="h-12 md:h-16 mb-6" aria-live="polite" aria-atomic="true">
-          <AnimatePresence mode="wait">
-            <motion.h2
-              key={titleIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="text-2xl md:text-4xl font-bold text-accent"
-            >
-              {titles[titleIndex]}
-            </motion.h2>
-          </AnimatePresence>
-        </div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto mb-10"
-        >
-          Building real-time and AI-enhanced applications, end to end.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <a
-            href="#projects"
-            className="px-8 py-4 rounded-full bg-accent text-background font-semibold hover:bg-accent/90 transition-colors shadow-[0_0_15px_rgba(0,191,255,0.3)] hover:shadow-[0_0_25px_rgba(0,191,255,0.5)]"
-            data-cursor="hover"
-          >
-            View Projects
-          </a>
-          <a
-            href="#contact"
-            className="px-8 py-4 rounded-full border border-foreground/20 text-foreground font-semibold hover:bg-foreground/5 transition-colors"
-            data-cursor="hover"
-          >
-            Get In Touch
-          </a>
-          <a
-            href="/Antony_Saleeb_Fakhry_CV.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-8 py-4 rounded-full border border-accent/50 text-accent font-semibold hover:bg-accent/10 transition-colors flex items-center gap-2"
-            data-cursor="hover"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            Resume
-          </a>
-        </motion.div>
+        <AuroraField className="h-full w-full opacity-90" />
       </motion.div>
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(ellipse_75%_60%_at_50%_45%,transparent_20%,var(--background)_95%)]"
+      />
+
+      <motion.span
+        aria-hidden="true"
+        style={{ x: ghostX }}
+        className="pointer-events-none absolute left-0 top-[58%] -z-10 select-none whitespace-nowrap text-[28vw] font-medium leading-none tracking-tighter text-foreground/[0.035] md:text-[22vw] md:text-foreground/[0.03]"
+      >
+        engineer · engineer ·
+      </motion.span>
+
+      <motion.div
+        style={{
+          opacity: fade,
+          filter: blur,
+          willChange: mobile ? "opacity" : "opacity, filter",
+          backfaceVisibility: "hidden",
+        }}
+        className="container relative mx-auto w-full px-5 sm:px-6 md:px-12"
+      >
+        <div className="max-w-4xl">
+          <motion.p
+            style={{ y: eyebrowY }}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="eyebrow mb-6 flex items-center gap-3 sm:mb-8"
+          >
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-pulse-ring absolute inline-flex h-full w-full rounded-full bg-accent-glow" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-glow" />
+            </span>
+            Full-Stack &amp; Applied-AI Engineer
+          </motion.p>
+
+          <motion.h1
+            style={{ y: titleY }}
+            className="mb-6 text-[clamp(2.75rem,12vw,8rem)] font-medium leading-[0.92] tracking-tight sm:mb-8"
+          >
+            {NAME.split(" ").map((word, i) => (
+              <span key={word} className="mr-[0.22em] inline-block overflow-hidden align-bottom">
+                <motion.span
+                  className="inline-block"
+                  initial={reduced ? undefined : { y: "110%" }}
+                  animate={reduced ? undefined : { y: 0 }}
+                  transition={{ duration: 0.9, delay: 0.15 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <span className={i === 1 ? "text-gradient" : undefined}>{word}</span>
+                </motion.span>
+              </span>
+            ))}
+          </motion.h1>
+
+          <motion.p
+            style={{ y: bodyY }}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.45 }}
+            className="mb-8 max-w-2xl text-lg leading-snug text-foreground/70 sm:mb-12 sm:text-xl md:text-2xl"
+          >
+            I build real-time systems and applied-AI products end to end — from
+            orchestrated PyTorch models to the Flutter and Next.js apps that ship
+            them.
+          </motion.p>
+
+          <motion.div
+            style={{ y: ctaY }}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.6 }}
+            className="flex flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:gap-y-4"
+          >
+            <Magnetic className="w-full sm:w-auto">
+              <a
+                href="#work"
+                className="glow-accent sheen group inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-7 py-4 font-mono text-xs uppercase tracking-[0.18em] text-background transition-transform duration-300 active:scale-[0.98] sm:w-auto sm:justify-start sm:py-3.5 sm:hover:scale-[1.04]"
+              >
+                See the work
+                <ArrowUpRight size={15} />
+              </a>
+            </Magnetic>
+
+            <div className="flex items-center justify-center gap-8 sm:justify-start">
+              <a
+                href="/Antony_Saleeb_Fakhry_CV.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-underline py-2 font-mono text-xs uppercase tracking-[0.18em] text-foreground/60 transition-colors hover:text-foreground"
+              >
+                Résumé
+              </a>
+              <a
+                href="#contact"
+                className="link-underline py-2 font-mono text-xs uppercase tracking-[0.18em] text-foreground/60 transition-colors hover:text-foreground"
+              >
+                Contact
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      <motion.a
+        href="#work"
+        aria-label="Scroll to work"
+        style={{ opacity: fade }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1 }}
+        className="absolute bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 text-foreground/35 transition-colors hover:text-accent"
+      >
+        <ArrowDown size={18} className="animate-float" />
+      </motion.a>
     </section>
   );
 }

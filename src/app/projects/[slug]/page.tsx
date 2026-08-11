@@ -2,14 +2,47 @@ import { notFound } from "next/navigation";
 import { projectsData } from "@/data/projects";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ExternalLink, Code, ArrowRight } from "lucide-react";
-import { FadeIn } from "@/components/ui/FadeIn";
-import { TiltLogo } from "@/components/ui/TiltLogo";
+import { ArrowLeft, ExternalLink, ImageOff } from "lucide-react";
+import { GithubIcon } from "@/components/ui/icons";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { Parallax } from "@/components/motion/Parallax";
+import type { Metadata } from "next";
 
 export function generateStaticParams() {
   return projectsData.map((p) => ({
     slug: p.slug,
   }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = projectsData.find((p) => p.slug === slug);
+
+  if (!project) return {};
+
+  const title = `${project.title} | Antony Saleeb`;
+  const description = project.description;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: project.image ? [{ url: project.image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: project.image ? [project.image] : undefined,
+    },
+  };
 }
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -21,42 +54,60 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   }
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-12">
-      <div className="container mx-auto px-6 md:px-12 max-w-4xl">
-        <Link 
-          href="/#projects" 
-          className="inline-flex items-center gap-2 text-foreground/60 hover:text-accent transition-colors mb-12"
-          data-cursor="hover"
+    <div className="relative min-h-screen overflow-hidden pb-20 pt-28 sm:pb-28 sm:pt-36">
+      <Parallax distance={60} className="absolute inset-x-0 -top-[10vh] -z-10 h-[90vh]">
+        <div aria-hidden="true" className="light-wash h-full w-full opacity-70" />
+      </Parallax>
+
+      <div className="container mx-auto max-w-5xl px-5 sm:px-6 md:px-12">
+        <Link
+          href="/#work"
+          className="group mb-8 inline-flex min-h-11 items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-foreground/40 transition-colors hover:text-accent sm:mb-12"
         >
-          <ArrowLeft size={20} />
-          Back to Projects
+          <ArrowLeft
+            size={14}
+            className="transition-transform duration-300 group-hover:-translate-x-0.5"
+          />
+          Back to work
         </Link>
 
-        <FadeIn>
-          <div className="mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">{project.title}</h1>
-            <div className="flex flex-wrap gap-3 mb-8">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-foreground/80 text-sm font-medium"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            
-            <div className="flex gap-4">
+        <Reveal variant="mask">
+          <h1 className="mb-6 text-[clamp(2.5rem,8vw,5.5rem)] font-medium leading-[0.95] tracking-tight">
+            {project.title}
+          </h1>
+        </Reveal>
+
+        <Reveal delay={0.05}>
+          <p className="mb-8 max-w-2xl text-xl leading-snug text-foreground/60">
+            {project.description}
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <ul className="mb-10 flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <li
+                key={tag}
+                className="border border-border-subtle bg-surface px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-foreground/60"
+              >
+                {tag}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+
+        {(project.liveUrl || project.githubUrl) && (
+          <Reveal delay={0.15}>
+            <div className="mb-20 flex flex-wrap gap-4">
               {project.liveUrl && (
                 <a
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 rounded-full bg-accent text-background font-semibold hover:bg-accent/90 transition-colors flex items-center gap-2"
-                  data-cursor="hover"
+                  className="glow-accent sheen inline-flex items-center gap-2 bg-accent px-6 py-3 font-mono text-[11px] uppercase tracking-[0.16em] text-background transition-transform duration-300 hover:scale-[1.03]"
                 >
-                  <ExternalLink size={18} />
-                  Live Demo
+                  <ExternalLink size={15} />
+                  Live demo
                 </a>
               )}
               {project.githubUrl && (
@@ -64,106 +115,137 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 rounded-full border border-white/20 text-foreground font-semibold hover:bg-white/5 transition-colors flex items-center gap-2"
-                  data-cursor="hover"
+                  className="inline-flex items-center gap-2 border border-border-strong px-6 py-3 font-mono text-[11px] uppercase tracking-[0.16em] text-foreground/70 transition-colors hover:border-accent/50 hover:text-accent"
                 >
-                  <Code size={18} />
-                  Source Code
+                  <GithubIcon size={15} />
+                  Source
                 </a>
               )}
             </div>
-          </div>
-        </FadeIn>
+          </Reveal>
+        )}
 
-        {/* Hero Image Placeholder / Actual Image */}
-        <FadeIn delay={0.2}>
-          <div className="w-full h-64 md:h-96 bg-[#050505] rounded-3xl border border-white/10 mb-16 relative overflow-hidden shadow-2xl">
-            {project.imageDisplay === 'contain' ? (
-              project.image && <TiltLogo src={project.image} alt={project.title} />
-            ) : project.image ? (
-              <Image 
-                src={project.image} 
-                alt={project.title} 
-                fill 
-                className="object-cover transition-transform duration-700 hover:scale-105" 
-                priority 
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-foreground/30 text-xl font-medium">Hero Image for {project.title}</span>
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-50"></div>
+        {/* Hero visual */}
+        <Reveal variant="scale" className="mb-20">
+          {project.imageDisplay === "contain" && project.image ? (
+            <div className="glass edge-light mx-auto max-w-md p-8">
+              <div className="relative aspect-square w-full">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 640px) 80vw, 448px"
+                  className="animate-float object-contain"
+                  priority
+                />
               </div>
-            )}
-          </div>
-        </FadeIn>
+            </div>
+          ) : (
+            <div className="glass relative aspect-video w-full overflow-hidden">
+              {project.image ? (
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 1024px"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-foreground/35">
+                  <ImageOff size={26} />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em]">
+                    Preview coming soon
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </Reveal>
 
-        <div className="grid md:grid-cols-3 gap-12">
-          <div className="md:col-span-2 space-y-12">
-            <FadeIn delay={0.3}>
-              <h2 className="text-2xl font-bold mb-4">Overview</h2>
-              <p className="text-foreground/80 leading-relaxed text-lg">
-                {project.fullDescription}
-              </p>
-            </FadeIn>
-            
-            <FadeIn delay={0.4}>
-              <h2 className="text-2xl font-bold mb-4">Challenges</h2>
-              <ul className="space-y-4">
-                {project.challenges.map((challenge, i) => (
-                  <li key={i} className="flex gap-4 items-start">
-                    <span className="w-2 h-2 mt-2 rounded-full bg-accent shrink-0"></span>
-                    <span className="text-foreground/80 leading-relaxed">{challenge}</span>
-                  </li>
-                ))}
-              </ul>
-            </FadeIn>
-          </div>
+        <div className="grid gap-14 md:grid-cols-[minmax(0,1fr)_300px] md:gap-16">
+          <div className="max-w-2xl space-y-14">
+            <Reveal>
+              <div>
+                <h2 className="mb-5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+                  Overview
+                </h2>
+                <p className="text-lg leading-relaxed text-foreground/80">
+                  {project.fullDescription}
+                </p>
+              </div>
+            </Reveal>
 
-          <div className="space-y-8">
-            <FadeIn delay={0.5}>
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                <h3 className="text-xl font-bold mb-4 border-b border-white/10 pb-4">Architecture</h3>
-                <ul className="space-y-3">
-                  {project.architecture.map((item, i) => (
-                    <li key={i} className="text-foreground/70 text-sm">
-                      {item}
+            <Reveal>
+              <div>
+                <h2 className="mb-5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+                  Hard parts
+                </h2>
+                <ul className="space-y-4">
+                  {project.challenges.map((challenge, i) => (
+                    <li
+                      key={challenge}
+                      className="flex gap-4 border-b border-border-subtle pb-4"
+                    >
+                      <span className="font-mono text-xs text-accent">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="leading-relaxed text-foreground/75">{challenge}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-            </FadeIn>
+            </Reveal>
           </div>
+
+          <Parallax distance={-24} className="md:pt-4">
+            <aside className="glass edge-light p-6">
+              <h2 className="mb-5 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+                Architecture
+              </h2>
+              <ul className="space-y-3">
+                {project.architecture.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-2.5 border-b border-border-subtle pb-3 text-sm leading-snug text-foreground/70 last:border-0 last:pb-0"
+                  >
+                    <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent/70" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          </Parallax>
         </div>
 
         {project.gallery && project.gallery.length > 0 && (
-          <div className="mt-24 mb-16">
-            <FadeIn delay={0.6}>
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold">Gallery</h2>
-                <div className="flex items-center gap-2 text-foreground/50 text-sm tracking-wider uppercase">
-                  <span>Scroll</span>
-                  <ArrowRight size={16} className="animate-pulse" />
-                </div>
-              </div>
-              
-              <div className="flex overflow-x-auto gap-8 pb-12 pt-4 px-4 -mx-4 snap-x snap-mandatory hide-scrollbar">
-                {project.gallery.map((img, i) => (
-                  <div 
-                    key={i} 
-                    className="relative flex-none w-[75vw] sm:w-[320px] snap-center rounded-[2.5rem] overflow-hidden border-[8px] border-white/5 bg-black shadow-[0_20px_50px_rgba(0,0,0,0.5)] group hover:-translate-y-2 transition-all duration-500"
-                  >
-                    <Image 
-                      src={img} 
-                      alt={`${project.title} screenshot ${i + 1}`} 
-                      width={600}
-                      height={1200}
-                      className="w-full h-auto transform group-hover:scale-[1.03] transition-transform duration-700 ease-out" 
-                      sizes="(max-width: 768px) 75vw, 320px" 
-                    />
+          <div className="mt-28">
+            <Reveal variant="mask">
+              <h2 className="mb-10 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
+                Gallery
+              </h2>
+            </Reveal>
+
+            <RevealGroup
+              className="hide-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto pb-6"
+              stagger={0.05}
+            >
+              {project.gallery.map((img, i) => (
+                <RevealItem key={img} variant="scale">
+                  <div className="group w-[62vw] shrink-0 snap-center overflow-hidden rounded-[1.75rem] border border-border-subtle bg-background-elevated p-1.5 transition-colors duration-300 hover:border-accent/40 sm:w-[230px]">
+                    <div className="relative aspect-[9/19.5] overflow-hidden rounded-[1.4rem]">
+                      <Image
+                        src={img}
+                        alt={`${project.title} screenshot ${i + 1}`}
+                        fill
+                        sizes="(max-width: 640px) 62vw, 230px"
+                        className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      />
+                    </div>
                   </div>
-                ))}
-              </div>
-            </FadeIn>
+                </RevealItem>
+              ))}
+            </RevealGroup>
           </div>
         )}
       </div>
