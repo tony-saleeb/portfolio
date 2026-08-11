@@ -78,7 +78,12 @@ export const projectsData: Project[] = [
       "Language: Dart"
     ],
     image: "/techtips-logo.png",
-    imageDisplay: "contain"
+    imageDisplay: "contain",
+    gallery: [
+      "/techtips/1.png", "/techtips/11.png", "/techtips/2.png", "/techtips/22.png",
+      "/techtips/3.png", "/techtips/33.png", "/techtips/4.png", "/techtips/44.png",
+      "/techtips/5.png", "/techtips/55.png", "/techtips/6.png", "/techtips/66.png"
+    ]
   },
   {
     slug: "bt2",

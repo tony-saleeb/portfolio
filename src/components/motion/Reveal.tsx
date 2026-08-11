@@ -1,6 +1,7 @@
 "use client";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import type { ReactNode } from "react";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 
 type RevealVariant = "up" | "mask" | "scale" | "blur";
 
@@ -41,9 +42,8 @@ const build = (variant: RevealVariant, duration: number, delay: number): Variant
 };
 
 /**
- * Scroll-triggered entrance. Under `prefers-reduced-motion` the children are
- * rendered in their final state with no animation and no transform, rather
- * than being animated more slowly.
+ * Scroll-triggered entrance. On mobile, mask/clipPath reveals are swapped for
+ * a simple fade-up so content never stays clipped mid-scroll.
  */
 export function Reveal({
   children,
@@ -54,16 +54,21 @@ export function Reveal({
   once = true,
 }: RevealProps) {
   const reduced = useReducedMotion();
+  const mobile = useIsMobile();
+  const effective = mobile && variant === "mask" ? "up" : variant;
 
   if (reduced) return <div className={className}>{children}</div>;
 
   return (
     <motion.div
       className={className}
-      variants={build(variant, duration, delay)}
+      variants={build(effective, mobile ? Math.min(duration, 0.5) : duration, delay)}
       initial="hidden"
       whileInView="shown"
-      viewport={{ once, margin: "-12% 0px -8% 0px" }}
+      viewport={{
+        once,
+        margin: mobile ? "0px 0px -8% 0px" : "-12% 0px -8% 0px",
+      }}
     >
       {children}
     </motion.div>
@@ -83,6 +88,7 @@ export function RevealGroup({
   once?: boolean;
 }) {
   const reduced = useReducedMotion();
+  const mobile = useIsMobile();
 
   if (reduced) return <div className={className}>{children}</div>;
 
@@ -91,10 +97,10 @@ export function RevealGroup({
       className={className}
       initial="hidden"
       whileInView="shown"
-      viewport={{ once, margin: "-10% 0px" }}
+      viewport={{ once, margin: mobile ? "0px" : "-10% 0px" }}
       variants={{
         hidden: {},
-        shown: { transition: { staggerChildren: stagger } },
+        shown: { transition: { staggerChildren: mobile ? stagger * 0.6 : stagger } },
       }}
     >
       {children}
@@ -112,11 +118,13 @@ export function RevealItem({
   variant?: RevealVariant;
 }) {
   const reduced = useReducedMotion();
+  const mobile = useIsMobile();
+  const effective = mobile && variant === "scale" ? "up" : variant;
 
   if (reduced) return <div className={className}>{children}</div>;
 
   return (
-    <motion.div className={className} variants={build(variant, 0.65, 0)}>
+    <motion.div className={className} variants={build(effective, 0.65, 0)}>
       {children}
     </motion.div>
   );

@@ -15,23 +15,23 @@ interface ParallaxProps {
 }
 
 /**
- * Scroll-linked vertical parallax. Mobile uses direct scroll mapping (no spring)
- * so layers stay locked to the finger — strong depth without jitter.
+ * Scroll-linked vertical parallax.
+ * Mobile uses a lighter travel distance so touch scroll stays smooth and
+ * content is less likely to clip inside overflow parents.
  */
 export function Parallax({ children, distance = -80, className, zoom = false }: ParallaxProps) {
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const mobile = useIsMobile();
-  const travel = mobile ? distance * 1.15 : distance;
 
   const { scrollYProgress } = useScrollTarget(ref);
   const progress = useScrollMotion(scrollYProgress);
+  const travel = mobile ? distance * 0.45 : distance;
   const y = useTransform(progress, [0, 1], [-travel, travel]);
   const scale = useTransform(
     progress,
     [0, 0.5, 1],
-    // Scale on mobile is skipped — compositing scale+translate every frame is costly.
-    zoom && !mobile ? [1.08, 1, 1.08] : [1, 1, 1]
+    zoom ? (mobile ? [1.04, 1, 1.04] : [1.08, 1, 1.08]) : [1, 1, 1]
   );
 
   if (reduced) {

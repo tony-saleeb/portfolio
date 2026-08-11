@@ -10,13 +10,19 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  weight: ["400", "500"],
+  style: ["normal"],
+  display: "swap",
+  preload: true,
 });
 
 const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "600"],
+  display: "swap",
+  // Secondary face — avoid preload warnings when mono isn't painted immediately.
+  preload: false,
 });
 
 // Set NEXT_PUBLIC_SITE_URL once this is deployed to its real domain -
@@ -65,7 +71,7 @@ export default function RootLayout({
       className={`${newsreader.variable} ${plexMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-accent/25 selection:text-foreground">
+      <body className={`${newsreader.className} min-h-full flex flex-col bg-background text-foreground selection:bg-accent/25 selection:text-foreground`}>
         {/*
           Framer Motion bakes `initial` state (opacity:0, transform:translate...)
           into the SSR'd HTML for animated elements, and only animates them in

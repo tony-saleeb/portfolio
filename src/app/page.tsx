@@ -14,13 +14,24 @@ export default function Home() {
       <DeepFractFeature />
       {/*
         Velocity skew is scoped to these sections deliberately. The hero has its
-        own layered parallax, and the DeepFract section pins a sticky panel -
+        own layered parallax, and the DeepFract section pins a sticky panel —
         wrapping either in a transform would fight choreography that already
         works.
       */}
       <ScrollSkew>
         <Projects />
-        <Showcase />
+        <Showcase
+          slug="techtips"
+          eyebrow="Fig. 02 — In the app"
+          title="TechTips — OS shortcuts, organised"
+          variant="cascade"
+        />
+        <Showcase
+          slug="bt2"
+          eyebrow="Fig. 03 — In the app"
+          title="BT2 — numerical methods, visualised"
+          variant="filmstrip"
+        />
         <Background />
         <Skills />
         <Contact />

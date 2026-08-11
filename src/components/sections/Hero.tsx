@@ -19,7 +19,7 @@ export function Hero() {
   const p = useScrollMotion(scrollYProgress);
 
   // Strong enough to feel cinematic; not so extreme it tears on a phone refresh.
-  const amp = mobile ? 1.05 : 1;
+  const amp = mobile ? 0.45 : 1;
   const auroraY = useTransform(p, [0, 1], ["0%", reduced ? "0%" : `${30 * amp}%`]);
   const auroraScale = useTransform(p, [0, 1], [1, reduced ? 1 : 1 + 0.28 * amp]);
   const ghostX = useTransform(p, [0, 1], ["0%", reduced ? "0%" : `${-14 * amp}%`]);

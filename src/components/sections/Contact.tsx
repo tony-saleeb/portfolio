@@ -46,16 +46,20 @@ export function Contact() {
         </Reveal>
 
         <Reveal variant="mask" delay={0.05}>
-          <h2 className="mb-6 max-w-3xl text-[clamp(2.25rem,6vw,4.5rem)] font-medium leading-[0.98] tracking-tight">
-            Open to full-stack, mobile, and{" "}
-            <span className="text-gradient">applied&nbsp;AI</span> roles.
-          </h2>
+          <Parallax distance={-56}>
+            <h2 className="mb-6 max-w-3xl text-[clamp(2.25rem,6vw,4.5rem)] font-medium leading-[0.98] tracking-tight">
+              Open to full-stack, mobile, and{" "}
+              <span className="text-gradient">applied&nbsp;AI</span> roles.
+            </h2>
+          </Parallax>
         </Reveal>
 
         <Reveal delay={0.1}>
-          <p className="mb-12 max-w-xl text-lg text-foreground/60">
-            Get in touch directly — no form, no gatekeeping.
-          </p>
+          <Parallax distance={32}>
+            <p className="mb-12 max-w-xl text-lg text-foreground/60">
+              Get in touch directly — no form, no gatekeeping.
+            </p>
+          </Parallax>
         </Reveal>
 
         <Reveal delay={0.15}>

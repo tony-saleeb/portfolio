@@ -126,7 +126,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         )}
 
         {/* Hero visual */}
-        <Reveal variant="scale" className="mb-20">
+        <div className="mb-20">
           {project.imageDisplay === "contain" && project.image ? (
             <div className="glass edge-light mx-auto max-w-md p-8">
               <div className="relative aspect-square w-full">
@@ -136,7 +136,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   fill
                   sizes="(max-width: 640px) 80vw, 448px"
                   className="animate-float object-contain"
-                  priority
                 />
               </div>
             </div>
@@ -149,7 +148,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   fill
                   sizes="(max-width: 768px) 100vw, 1024px"
                   className="object-cover"
-                  priority
                 />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-foreground/35">
@@ -161,7 +159,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               )}
             </div>
           )}
-        </Reveal>
+        </div>
 
         <div className="grid gap-14 md:grid-cols-[minmax(0,1fr)_300px] md:gap-16">
           <div className="max-w-2xl space-y-14">

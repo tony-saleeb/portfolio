@@ -63,35 +63,39 @@ export function Skills() {
 
       <div className="container mx-auto px-5 sm:px-6 md:px-12">
         <Reveal variant="mask">
-          <h2 className="mb-14 text-[clamp(2rem,4.5vw,3.25rem)] font-medium tracking-tight">
-            Stack
-          </h2>
+          <Parallax distance={-40}>
+            <h2 className="mb-14 text-[clamp(2rem,4.5vw,3.25rem)] font-medium tracking-tight">
+              Stack
+            </h2>
+          </Parallax>
         </Reveal>
 
         <RevealGroup className="grid gap-px overflow-hidden border border-border-subtle bg-border-subtle sm:grid-cols-2 lg:grid-cols-5">
           {skillGroups.map((group, i) => (
             <RevealItem key={group.title} className="h-full">
-              <div className="edge-light group h-full bg-background p-6 transition-colors duration-500 hover:bg-surface">
-                <div className="mb-6 flex items-baseline justify-between">
-                  <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-accent">
-                    {group.title}
-                  </h3>
-                  <span className="font-mono text-[10px] text-foreground/25">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
+              <Parallax distance={[28, -34, 22, -26, 30][i]} className="h-full">
+                <div className="edge-light group h-full bg-background p-6 transition-colors duration-500 hover:bg-surface">
+                  <div className="mb-6 flex items-baseline justify-between">
+                    <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-accent">
+                      {group.title}
+                    </h3>
+                    <span className="font-mono text-[10px] text-foreground/25">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <ul className="space-y-3">
+                    {group.skills.map((skill) => (
+                      <li
+                        key={skill}
+                        className="flex items-center gap-2.5 text-foreground/70 transition-colors duration-300 group-hover:text-foreground/90"
+                      >
+                        <span className="h-px w-3 bg-accent/50 transition-all duration-500 group-hover:w-5" />
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-3">
-                  {group.skills.map((skill) => (
-                    <li
-                      key={skill}
-                      className="flex items-center gap-2.5 text-foreground/70 transition-colors duration-300 group-hover:text-foreground/90"
-                    >
-                      <span className="h-px w-3 bg-accent/50 transition-all duration-500 group-hover:w-5" />
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              </Parallax>
             </RevealItem>
           ))}
         </RevealGroup>

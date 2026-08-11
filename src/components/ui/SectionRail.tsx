@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const stops = [
   { id: "home", num: "01", label: "Intro" },
@@ -9,44 +10,79 @@ const stops = [
   { id: "contact", num: "05", label: "Contact" },
 ];
 
-/*
- * A running index pinned to the true viewport edge (not the content gutter),
- * so it can never collide with the container at any width. Dots-only by
- * default; the number/label only appears on hover/focus, as an absolutely
- * positioned tooltip that doesn't affect the rail's own footprint. Works as
- * a plain anchor list with no JS - the active-section highlight is the only
- * part that needs it.
+/**
+ * Viewport probe: which section's top has most recently crossed this line
+ * owns the active dot. More reliable than IntersectionObserver here — long
+ * Gallery / Projects stretches between `#work` and `#background` leave the
+ * narrow IO band empty, so the highlight used to freeze on Work.
  */
+function readActiveId(): string {
+  const probe = window.innerHeight * 0.38;
+  let current = stops[0].id;
+
+  for (const stop of stops) {
+    const el = document.getElementById(stop.id);
+    if (!el) continue;
+    if (el.getBoundingClientRect().top <= probe) current = stop.id;
+  }
+
+  return current;
+}
+
 export function SectionRail() {
-  const [active, setActive] = useState<string | null>(null);
+  const pathname = usePathname();
+  const [active, setActive] = useState<string>(stops[0].id);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const elements = stops
-      .map((s) => document.getElementById(s.id))
-      .filter((el): el is HTMLElement => el !== null);
+    if (pathname !== "/") {
+      setReady(false);
+      return;
+    }
 
-    if (elements.length === 0) return;
+    const present = stops.some((s) => document.getElementById(s.id));
+    if (!present) {
+      setReady(false);
+      return;
+    }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
-    );
+    setReady(true);
+    let frame = 0;
 
-    elements.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+    const sync = () => {
+      frame = 0;
+      setActive(readActiveId());
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(sync);
+    };
+
+    sync();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("hashchange", sync);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("hashchange", sync);
+    };
+  }, [pathname]);
+
+  if (pathname !== "/" || !ready) return null;
 
   return (
     <nav
       aria-label="Section index"
-      className="hidden lg:flex fixed left-3 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-5"
+      className="fixed left-3 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-5 lg:flex"
     >
-      <span aria-hidden="true" className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-border-subtle" />
+      <span
+        aria-hidden="true"
+        className="absolute bottom-0 left-1/2 top-0 w-px -translate-x-1/2 bg-border-subtle"
+      />
       {stops.map((stop) => {
         const isActive = active === stop.id;
         return (
@@ -56,12 +92,13 @@ export function SectionRail() {
             aria-label={`${stop.num} — ${stop.label}`}
             aria-current={isActive ? "true" : undefined}
             className="group relative flex items-center py-1"
+            onClick={() => setActive(stop.id)}
           >
             <span
               className={`relative z-10 block rounded-full transition-all duration-500 ${
                 isActive
-                  ? "w-2 h-2 bg-accent-glow shadow-[0_0_10px_var(--accent-glow)]"
-                  : "w-1.5 h-1.5 bg-border-strong group-hover:bg-accent/70"
+                  ? "h-2 w-2 bg-accent-glow shadow-[0_0_10px_var(--accent-glow)]"
+                  : "h-1.5 w-1.5 bg-border-strong group-hover:bg-accent/70"
               }`}
             />
             <span

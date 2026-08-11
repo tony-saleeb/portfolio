@@ -5,7 +5,7 @@ import { GhostMark } from "@/components/motion/GhostMark";
 
 const timeline = [
   {
-    date: "Expected 2026",
+    date: "2026",
     title: "B.Sc. Computer Science",
     org: "MTI University",
     description:
@@ -34,52 +34,60 @@ export function Background() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)] lg:gap-20">
           <div>
             <Reveal variant="mask">
-              <h2 className="mb-8 text-[clamp(1.75rem,6vw,3.25rem)] font-medium tracking-tight md:mb-10">
-                Background
-              </h2>
+              <Parallax distance={-36}>
+                <h2 className="mb-8 text-[clamp(1.75rem,6vw,3.25rem)] font-medium tracking-tight md:mb-10">
+                  Background
+                </h2>
+              </Parallax>
             </Reveal>
 
             <Reveal>
-              <p className="mb-5 max-w-2xl text-lg leading-relaxed text-foreground/80 md:mb-6 md:text-xl">
-                I am a Computer Science graduate (MTI University, 2026) who builds
-                AI-assisted, full-stack applications — from mobile UI through
-                backend infrastructure.
-              </p>
+              <Parallax distance={24}>
+                <p className="mb-5 max-w-2xl text-lg leading-relaxed text-foreground/80 md:mb-6 md:text-xl">
+                  I am a Computer Science graduate (MTI University, 2026) who builds
+                  AI-assisted, full-stack applications — from mobile UI through
+                  backend infrastructure.
+                </p>
+              </Parallax>
             </Reveal>
 
             <Reveal delay={0.05}>
-              <p className="max-w-2xl text-base leading-relaxed text-foreground/60 md:text-lg">
-                I care about building things that work under real constraints, with
-                real users and real data, not just in a tutorial. Whether it&apos;s
-                real-time syncing for multiplayer apps, orchestrating models for a
-                hard vision problem, or architecting a backend, I bring ideas to
-                life with clean, maintainable code.
-              </p>
+              <Parallax distance={40}>
+                <p className="max-w-2xl text-base leading-relaxed text-foreground/60 md:text-lg">
+                  I care about building things that work under real constraints, with
+                  real users and real data, not just in a tutorial. Whether it&apos;s
+                  real-time syncing for multiplayer apps, orchestrating models for a
+                  hard vision problem, or architecting a backend, I bring ideas to
+                  life with clean, maintainable code.
+                </p>
+              </Parallax>
             </Reveal>
 
             <RevealGroup className="mt-10 space-y-px overflow-hidden border border-border-subtle bg-border-subtle md:mt-14">
-              {timeline.map((item) => (
+              {timeline.map((item, i) => (
                 <RevealItem key={item.title}>
-                  <div className="edge-light group bg-background p-5 transition-colors duration-500 hover:bg-surface sm:flex sm:gap-8 sm:p-6">
-                    <p className="mb-2 shrink-0 font-mono text-[11px] uppercase tracking-[0.16em] text-accent sm:mb-0 sm:w-36">
-                      {item.date}
-                    </p>
-                    <div>
-                      <h3 className="text-lg font-medium sm:text-xl">{item.title}</h3>
-                      <p className="mb-2 font-mono text-[11px] uppercase tracking-wider text-foreground/40">
-                        {item.org}
+                  <Parallax distance={i === 0 ? 18 : -22}>
+                    <div className="edge-light group bg-background p-5 transition-colors duration-500 hover:bg-surface sm:flex sm:gap-8 sm:p-6">
+                      <p className="mb-2 shrink-0 font-mono text-[11px] uppercase tracking-[0.16em] text-accent sm:mb-0 sm:w-36">
+                        {item.date}
                       </p>
-                      <p className="leading-relaxed text-foreground/60">{item.description}</p>
+                      <div>
+                        <h3 className="text-lg font-medium sm:text-xl">{item.title}</h3>
+                        <p className="mb-2 font-mono text-[11px] uppercase tracking-wider text-foreground/40">
+                          {item.org}
+                        </p>
+                        <p className="leading-relaxed text-foreground/60">{item.description}</p>
+                      </div>
                     </div>
-                  </div>
+                  </Parallax>
                 </RevealItem>
               ))}
             </RevealGroup>
           </div>
 
-          <Parallax distance={-70} className="order-first lg:order-none lg:pt-24">
+          <Parallax distance={-70} zoom className="order-first lg:order-none lg:pt-24">
             <div className="glass edge-light group relative mx-auto max-w-[240px] p-2 sm:max-w-[300px]">
-              <div className="relative aspect-[4/5] overflow-hidden bg-[#070b12] [transform:translateZ(0)]">
+              <div className="relative aspect-[4/5] overflow-hidden bg-background-elevated [transform:translateZ(0)]">
                 <Image
                   src="/tony.jpeg"
                   alt="Antony Saleeb"
@@ -87,7 +95,6 @@ export function Background() {
                   height={750}
                   className="h-full w-full object-cover object-top grayscale transition-all duration-700 group-hover:grayscale-0"
                   sizes="(max-width: 640px) 240px, 300px"
-                  priority
                 />
                 <div
                   aria-hidden="true"

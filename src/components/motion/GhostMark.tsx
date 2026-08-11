@@ -7,7 +7,7 @@ import { useScrollMotion } from "@/hooks/useScrollMotion";
 
 /**
  * Oversized word that slides horizontally with scroll.
- * Mobile: direct mapping, no spring — avoids rubber-band jitter.
+ * Mobile keeps the effect with shorter travel so it doesn't fight touch scroll.
  */
 export function GhostMark({
   children,
@@ -24,10 +24,25 @@ export function GhostMark({
   const reduced = useReducedMotion();
   const mobile = useIsMobile();
 
-  const span = mobile ? 1.25 : 1;
   const { scrollYProgress } = useScrollTarget(ref);
   const progress = useScrollMotion(scrollYProgress);
-  const x = useTransform(progress, [0, 1], [`${from * span}%`, `${to * span}%`]);
+  const start = mobile ? from * 0.45 : from;
+  const end = mobile ? to * 0.45 : to;
+  const x = useTransform(progress, [0, 1], [`${start}%`, `${end}%`]);
+
+  if (reduced) {
+    return (
+      <div
+        ref={ref}
+        aria-hidden="true"
+        className={`pointer-events-none absolute select-none overflow-hidden ${className ?? ""}`}
+      >
+        <span className="block whitespace-nowrap text-[18vw] font-medium leading-none tracking-tighter text-foreground/[0.035]">
+          {children}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -37,11 +52,11 @@ export function GhostMark({
     >
       <motion.span
         style={{
-          x: reduced ? 0 : x,
+          x,
           willChange: "transform",
           backfaceVisibility: "hidden",
         }}
-        className="block whitespace-nowrap text-[22vw] font-medium leading-none tracking-tighter text-foreground/[0.04] md:text-[18vw] md:text-foreground/[0.035]"
+        className="block whitespace-nowrap text-[20vw] font-medium leading-none tracking-tighter text-foreground/[0.04] md:text-[18vw] md:text-foreground/[0.035]"
       >
         {children}
       </motion.span>
