@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     "Portfolio of Antony Saleeb — real-time systems and applied-AI products, from orchestrated PyTorch models to the Flutter and Next.js apps that ship them.",
   icons: {
     icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico", sizes: "any" },
       { url: "/icon.png", type: "image/png", sizes: "32x32" },
-      { url: "/as-avatar.png", type: "image/png", sizes: "512x512" },
     ],
     apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
   },
