@@ -1,26 +1,362 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
+  --color-background-elevated: var(--background-elevated);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent: var(--accent);
+  --color-accent-glow: var(--accent-glow);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/*
+ * Cinematic dark-first palette. The accent pair (electric blue -> cyan) is
+ * pulled from the DeepFract identity so the site and the flagship project
+ * read as one system rather than two.
+ */
+:root {
+  --background: #06080d;
+  --background-elevated: #0b0f17;
+  --foreground: #e9edf5;
+  --accent: #3b9dff;
+  --accent-glow: #22d3ee;
+  --surface: rgba(233, 237, 245, 0.04);
+  --surface-hover: rgba(233, 237, 245, 0.08);
+  --border-subtle: rgba(233, 237, 245, 0.1);
+  --border-strong: rgba(233, 237, 245, 0.22);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* next-themes adds `.dark` when the resolved system preference is dark —
+   keep tokens identical to :root so both paths stay in sync. */
+.dark {
+  --background: #06080d;
+  --background-elevated: #0b0f17;
+  --foreground: #e9edf5;
+  --accent: #3b9dff;
+  --accent-glow: #22d3ee;
+  --surface: rgba(233, 237, 245, 0.04);
+  --surface-hover: rgba(233, 237, 245, 0.08);
+  --border-subtle: rgba(233, 237, 245, 0.1);
+  --border-strong: rgba(233, 237, 245, 0.22);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.light {
+  --background: #f7f9fc;
+  --background-elevated: #ffffff;
+  --foreground: #0b1220;
+  --accent: #0d6efd;
+  --accent-glow: #0891b2;
+  --surface: rgba(11, 18, 32, 0.035);
+  --surface-hover: rgba(11, 18, 32, 0.06);
+  --border-subtle: rgba(11, 18, 32, 0.1);
+  --border-strong: rgba(11, 18, 32, 0.22);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Clear the fixed navbar when jumping via section rail / in-page anchors. */
+section[id] {
+  scroll-margin-top: 5.5rem;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-serif), Georgia, serif;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fixed grain layer - stays put while content scrolls, so it reads as film
+   grain over the whole frame rather than a texture glued to the page. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: var(--grain);
+  opacity: 0.55;
+}
+
+/* ---------- Type ---------- */
+
+.text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--foreground) 0%,
+    var(--foreground) 40%,
+    var(--accent) 70%,
+    var(--accent-glow) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
+
+.pull-quote {
+  font-size: clamp(1.5rem, 1rem + 1.8vw, 2.25rem);
+  line-height: 1.3;
+  /* Soft slant without loading a separate italic face (avoids unused font preloads). */
+  font-style: normal;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Surfaces ---------- */
+
+.glass {
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--foreground) 7%, transparent),
+    color-mix(in oklab, var(--foreground) 2%, transparent)
+  );
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
+}
+
+/* Gradient hairline that only lights up along the top edge of a card. */
+.edge-light {
+  position: relative;
+}
+.edge-light::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--accent) 70%, transparent),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.edge-light:hover::before {
+  opacity: 1;
+}
+
+.glow-accent {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--accent) 35%, transparent),
+    0 0 30px -6px color-mix(in oklab, var(--accent) 55%, transparent),
+    0 0 80px -20px color-mix(in oklab, var(--accent-glow) 45%, transparent);
+}
+
+/*
+ * Soft light wash used behind sections. Two offset radial fields rather than
+ * one, so the falloff is uneven and it reads as atmosphere instead of a
+ * centred spotlight.
+ */
+.light-wash {
+  background:
+    radial-gradient(
+      ellipse 50% 45% at 18% 22%,
+      color-mix(in oklab, var(--accent) 20%, transparent),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 45% 50% at 82% 72%,
+      color-mix(in oklab, var(--accent-glow) 16%, transparent),
+      transparent 66%
+    );
+  filter: blur(14px);
+}
+
+/* ---------- Motion ---------- */
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(220%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 38s linear infinite;
+}
+.animate-float {
+  animation: float-slow 7s ease-in-out infinite;
+}
+.animate-pulse-ring {
+  animation: pulse-ring 2.8s ease-out infinite;
+}
+
+/* Diagonal light sweep across a surface on hover. */
+.sheen {
+  position: relative;
+  overflow: hidden;
+}
+.sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 45%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in oklab, var(--foreground) 12%, transparent),
+    transparent
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+.sheen:hover::after {
+  animation: sheen 0.9s ease-out;
+}
+
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  text-decoration: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .link-underline {
+    transition: background-size 0.3s ease;
+  }
+}
+.link-underline:hover,
+.link-underline:focus-visible {
+  background-size: 100% 1px;
+}
+
+/*
+ * Anything purely decorative that loops forever is silenced for users who ask
+ * for reduced motion. Scroll-linked and entrance animations are handled in JS
+ * via framer-motion's useReducedMotion, which resolves them to their final
+ * state instead of animating.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-float,
+  .animate-pulse-ring {
+    animation: none !important;
+  }
+  .sheen:hover::after {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/*
+ * Phones: cheaper backdrop blur, quieter decorative loops, and a touch-friendly
+ * sheen trigger via :active instead of :hover (hover sticks after tap on iOS).
+ */
+@media (max-width: 767px) {
+  .glass {
+    /* Cheaper frosted glass while scrolling parallax layers. */
+    backdrop-filter: blur(4px);
+  }
+  .light-wash {
+    filter: blur(6px);
+  }
+  .animate-marquee {
+    animation-duration: 52s;
+  }
+  .sheen:hover::after {
+    animation: none;
+  }
+  .sheen:active::after {
+    animation: sheen 0.7s ease-out;
+  }
+  .edge-light:hover::before {
+    opacity: 0;
+  }
+  .edge-light:active::before {
+    opacity: 1;
+  }
+
+  /*
+   * Promote scroll-linked layers without forcing permanent will-change on
+   * everything. Transform-only animations stay on the compositor.
+   */
+  .parallax-layer {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+}
+
+/* ---------- Scrollbar ---------- */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--accent) 45%, transparent);
+  border: 3px solid var(--background);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
