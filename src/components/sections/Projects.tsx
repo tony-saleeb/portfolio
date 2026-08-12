@@ -88,7 +88,7 @@ export function Projects() {
                     href={`/projects/${project.slug}`}
                     className="glass edge-light sheen group flex h-full flex-col overflow-hidden transition-colors duration-300 hover:border-accent/40"
                   >
-                    <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden border-b border-border-subtle bg-background-elevated [transform:translateZ(0)]">
+                    <div className="relative aspect-4/3 w-full shrink-0 overflow-hidden border-b border-border-subtle bg-background-elevated transform-[translateZ(0)]">
                       <CardVisual project={project} />
                     </div>
 

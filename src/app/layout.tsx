@@ -84,7 +84,7 @@ export default function RootLayout({
         </noscript>
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-accent focus:text-background focus:font-semibold"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:px-4 focus:py-2 focus:bg-accent focus:text-background focus:font-semibold"
         >
           Skip to content
         </a>
@@ -92,7 +92,7 @@ export default function RootLayout({
           <ScrollProgress />
           <Navbar />
           <SectionRail />
-          <main id="main-content" className="relative z-[2] flex-grow flex flex-col">
+          <main id="main-content" className="relative z-2 grow flex flex-col">
             {children}
           </main>
           <Footer />

@@ -39,7 +39,7 @@ export function Hero() {
     <section
       ref={ref}
       id="home"
-      className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-[max(5rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]"
+      className="relative isolate flex min-h-svh items-center overflow-hidden pt-[max(5rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]"
     >
       <motion.div
         style={{ y: auroraY, scale: auroraScale, willChange: "transform", backfaceVisibility: "hidden" }}
@@ -56,7 +56,7 @@ export function Hero() {
       <motion.span
         aria-hidden="true"
         style={{ x: ghostX }}
-        className="pointer-events-none absolute left-0 top-[58%] -z-10 select-none whitespace-nowrap text-[28vw] font-medium leading-none tracking-tighter text-foreground/[0.035] md:text-[22vw] md:text-foreground/[0.03]"
+        className="pointer-events-none absolute left-0 top-[58%] -z-10 select-none whitespace-nowrap text-[28vw] font-medium leading-none tracking-tighter text-foreground/3.5 md:text-[22vw] md:text-foreground/3"
       >
         engineer · engineer ·
       </motion.span>
@@ -134,7 +134,7 @@ export function Hero() {
 
             <div className="flex items-center justify-center gap-8 sm:justify-start">
               <a
-                href="/Antony_Saleeb_Fakhry_CV.pdf"
+                href={`/${encodeURIComponent("Antonyy Saleeb's CV.pdf")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="link-underline py-2 font-mono text-xs uppercase tracking-[0.18em] text-foreground/60 transition-colors hover:text-foreground"

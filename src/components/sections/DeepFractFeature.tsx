@@ -16,13 +16,15 @@ export function DeepFractFeature() {
       <Parallax distance={90} className="pointer-events-none absolute inset-x-0 -top-1/4 -z-10 h-[150%]">
         <div aria-hidden="true" className="light-wash h-full w-full opacity-60" />
       </Parallax>
-      <GhostMark className="pointer-events-none -top-6 left-0 w-full">DEEPFRACT</GhostMark>
 
-      {/* Laptop dive sequence — sticky scroll story */}
+      {/* Laptop dive — sticky hosts DEEPFRACT watermark (opaque panel would cover a section-level one) */}
       <DeepFractLaptop />
 
       {/* Write-up coda */}
       <div className="container relative mx-auto px-5 pb-20 sm:px-6 md:px-12 md:pb-32">
+        <GhostMark className="left-0 top-8 w-full" from={8} to={-10}>
+          DEEPFRACT
+        </GhostMark>
         <div className="mx-auto max-w-2xl">
           <Reveal>
             <Parallax distance={30}>

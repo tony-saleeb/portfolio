@@ -274,7 +274,7 @@ function CascadeScreen({
 
 function Screen({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative w-[152px] shrink-0 overflow-hidden rounded-[1.75rem] border border-border-subtle bg-background-elevated p-1.5 sm:w-[180px] md:w-[210px]">
+    <div className="relative w-38 shrink-0 overflow-hidden rounded-[1.75rem] border border-border-subtle bg-background-elevated p-1.5 sm:w-45 md:w-52.5">
       <div className="relative aspect-[9/19.5] overflow-hidden rounded-[1.4rem]">
         <Image
           src={src}

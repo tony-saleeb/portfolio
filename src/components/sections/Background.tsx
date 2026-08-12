@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
+import { ParallaxImage } from "@/components/motion/ParallaxImage";
 import { GhostMark } from "@/components/motion/GhostMark";
 
 const timeline = [
@@ -24,14 +24,14 @@ export function Background() {
   return (
     <section
       id="background"
-      className="relative overflow-hidden border-t border-border-subtle py-20 md:py-32"
+      className="relative overflow-x-clip border-t border-border-subtle py-20 md:py-32"
     >
       <GhostMark className="left-0 top-10 w-full" from={-10} to={14}>
         BACKGROUND
       </GhostMark>
 
       <div className="container relative mx-auto px-5 sm:px-6 md:px-12">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)] lg:gap-20">
+        <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,280px)] lg:gap-16 xl:gap-20">
           <div>
             <Reveal variant="mask">
               <Parallax distance={-36}>
@@ -85,27 +85,30 @@ export function Background() {
             </RevealGroup>
           </div>
 
-          <Parallax distance={-70} zoom className="order-first lg:order-none lg:pt-24">
-            <div className="glass edge-light group relative mx-auto max-w-[240px] p-2 sm:max-w-[300px]">
-              <div className="relative aspect-[4/5] overflow-hidden bg-background-elevated [transform:translateZ(0)]">
-                <Image
-                  src="/tony.jpeg"
-                  alt="Antony Saleeb"
-                  width={600}
-                  height={750}
-                  className="h-full w-full object-cover object-top grayscale transition-all duration-700 group-hover:grayscale-0"
-                  sizes="(max-width: 640px) 240px, 300px"
-                />
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-accent/25 via-transparent to-transparent mix-blend-screen"
-                />
-              </div>
-              <p className="px-2 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/35">
-                Antony Saleeb — Cairo
-              </p>
-            </div>
-          </Parallax>
+          <Reveal className="order-first lg:order-0 lg:pt-16">
+            <Parallax distance={-48}>
+              <figure className="mx-auto w-full max-w-[220px] sm:max-w-[240px] lg:max-w-none">
+                <div className="relative border border-border-subtle">
+                  <ParallaxImage
+                    src="/tony.jpeg"
+                    alt="Antony Saleeb"
+                    className="aspect-4/5 w-full bg-background-elevated"
+                    imageClassName="object-cover object-top"
+                    travel={12}
+                    sizes="240px"
+                  />
+                </div>
+                <figcaption className="mt-3 flex items-baseline justify-between gap-3">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-foreground/40">
+                    Antony Saleeb
+                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/30">
+                    Cairo
+                  </p>
+                </figcaption>
+              </figure>
+            </Parallax>
+          </Reveal>
         </div>
       </div>
     </section>

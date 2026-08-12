@@ -37,7 +37,7 @@ export function GhostMark({
         aria-hidden="true"
         className={`pointer-events-none absolute select-none overflow-hidden ${className ?? ""}`}
       >
-        <span className="block whitespace-nowrap text-[18vw] font-medium leading-none tracking-tighter text-foreground/[0.035]">
+        <span className="block whitespace-nowrap text-[18vw] font-medium leading-none tracking-tighter text-foreground/6">
           {children}
         </span>
       </div>
@@ -56,7 +56,7 @@ export function GhostMark({
           willChange: "transform",
           backfaceVisibility: "hidden",
         }}
-        className="block whitespace-nowrap text-[20vw] font-medium leading-none tracking-tighter text-foreground/[0.04] md:text-[18vw] md:text-foreground/[0.035]"
+        className="block whitespace-nowrap text-[20vw] font-medium leading-none tracking-tighter text-foreground/6.5 md:text-[18vw] md:text-foreground/5.5"
       >
         {children}
       </motion.span>

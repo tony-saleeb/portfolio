@@ -13,7 +13,7 @@ const socials = [
 
 export function Footer() {
   return (
-    <footer className="relative z-[2] border-t border-border-subtle bg-background pb-[env(safe-area-inset-bottom)]">
+    <footer className="relative z-2 border-t border-border-subtle bg-background pb-[env(safe-area-inset-bottom)]">
       <div className="container mx-auto flex flex-col items-center justify-between gap-5 px-5 py-8 sm:px-6 md:flex-row md:px-12">
         <p className="font-mono text-xs tracking-wide text-foreground/40">
           &copy; 2026 Antony Saleeb.

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 const stops = [
   { id: "home", num: "01", label: "Intro" },
@@ -31,22 +32,17 @@ function readActiveId(): string {
 
 export function SectionRail() {
   const pathname = usePathname();
+  const mounted = useIsMounted();
   const [active, setActive] = useState<string>(stops[0].id);
-  const [ready, setReady] = useState(false);
+
+  const present =
+    mounted &&
+    pathname === "/" &&
+    stops.some((s) => document.getElementById(s.id));
 
   useEffect(() => {
-    if (pathname !== "/") {
-      setReady(false);
-      return;
-    }
+    if (!present) return;
 
-    const present = stops.some((s) => document.getElementById(s.id));
-    if (!present) {
-      setReady(false);
-      return;
-    }
-
-    setReady(true);
     let frame = 0;
 
     const sync = () => {
@@ -70,9 +66,9 @@ export function SectionRail() {
       window.removeEventListener("resize", onScroll);
       window.removeEventListener("hashchange", sync);
     };
-  }, [pathname]);
+  }, [present]);
 
-  if (pathname !== "/" || !ready) return null;
+  if (!present) return null;
 
   return (
     <nav

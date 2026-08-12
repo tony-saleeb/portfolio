@@ -76,7 +76,7 @@ export function Navbar() {
             <div className="ml-1 flex items-center gap-5 border-l border-border-subtle pl-5">
               <ThemeToggle />
               <a
-                href="/Antony_Saleeb_Fakhry_CV.pdf"
+                href={`/${encodeURIComponent("Antonyy Saleeb's CV.pdf")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="border border-accent/40 px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-accent transition-colors hover:bg-accent hover:text-background"
@@ -116,7 +116,7 @@ export function Navbar() {
               </a>
             ))}
             <a
-              href="/Antony_Saleeb_Fakhry_CV.pdf"
+              href={`/${encodeURIComponent("Antonyy Saleeb's CV.pdf")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 mx-4 inline-flex items-center justify-center border border-accent/40 px-4 py-3.5 font-mono text-sm uppercase tracking-[0.16em] text-accent"

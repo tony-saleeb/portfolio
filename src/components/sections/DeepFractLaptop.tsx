@@ -60,15 +60,29 @@ function PinnedBeat() {
   const logoAssemble = useTransform(p, [0.12, 0.48], [0, 1]);
   const encodeOpacity = useTransform(p, [0.54, 0.6], [0, 1]);
   const hudOpacity = useTransform(p, [0.56, 0.64], [0, 1]);
+  const markX = useTransform(p, [0, 1], ["-8%", "10%"]);
 
   return (
     <div ref={trackRef} className="relative h-[280vh]">
-      <div className="sticky top-0 flex h-svh flex-col bg-background px-5 pt-[max(5.25rem,calc(env(safe-area-inset-top)+4.25rem))] pb-4">
+      <div className="sticky top-0 flex h-svh flex-col overflow-hidden bg-background px-5 pt-[max(5.25rem,calc(env(safe-area-inset-top)+4.25rem))] pb-4">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 light-wash opacity-35" />
+
+        {/* Watermark — inside sticky (opaque bg would hide a section-level GhostMark) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-[max(5.5rem,calc(env(safe-area-inset-top)+4.5rem))] z-0 overflow-hidden"
+        >
+          <motion.span
+            style={{ x: markX }}
+            className="block whitespace-nowrap text-[20vw] font-medium leading-none tracking-tighter text-foreground/10 md:text-[18vw] md:text-foreground/8.5"
+          >
+            DEEPFRACT
+          </motion.span>
+        </div>
 
         <motion.div
           style={{ opacity: titleOpacity, y: titleY }}
-          className="mx-auto w-full max-w-[480px] shrink-0"
+          className="relative z-1 mx-auto w-full max-w-120 shrink-0"
         >
           <p className="eyebrow mb-1">Fig. 01 — Flagship</p>
           <h2 className="text-[clamp(1.5rem,3.8vw,2.25rem)] font-medium leading-[0.95] tracking-tight">
@@ -80,7 +94,7 @@ function PinnedBeat() {
         </motion.div>
 
         {/* Scales the whole laptop stack so the chin/trackpad never clips */}
-        <div className="mx-auto flex min-h-0 w-full max-w-[480px] flex-1 flex-col">
+        <div className="relative z-1 mx-auto flex min-h-0 w-full max-w-120 flex-1 flex-col">
           <FitScale className="flex w-full flex-col items-center gap-3 pt-3">
             <motion.div
               style={{ y: laptopY, opacity: laptopOpacity }}
@@ -190,7 +204,7 @@ function StaticBeat() {
       </div>
       <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-2">
         <div className="overflow-hidden rounded-2xl border border-border-subtle bg-background-elevated">
-          <div className="relative aspect-[4/3]">
+          <div className="relative aspect-4/3">
             <SourcePhoto />
           </div>
           <div className="border-t border-border-subtle px-4 py-3">
@@ -201,7 +215,7 @@ function StaticBeat() {
           </div>
         </div>
         <div className="overflow-hidden rounded-2xl border border-accent/40 bg-background-elevated">
-          <div className="relative flex aspect-[4/3] items-center justify-center bg-[#05070c] p-8">
+          <div className="relative flex aspect-4/3 items-center justify-center bg-[#05070c] p-8">
             <EncodedResult />
           </div>
           <div className="border-t border-border-subtle px-4 py-3">
@@ -255,7 +269,7 @@ function Laptop({
               WebkitBackfaceVisibility: "hidden",
             }}
           >
-            <div className="absolute inset-[12%] rounded-[2px] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.06),transparent_65%)]" />
+            <div className="absolute inset-[12%] rounded-xs bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.06),transparent_65%)]" />
           </div>
 
           {/* Display face — aluminum lip, image fills the panel */}
@@ -267,19 +281,19 @@ function Laptop({
             }}
             className="relative overflow-hidden rounded-[12px_12px_6px_6px] border border-[#5c5c62]/70 bg-[#2c2c2e] p-[0.5%]"
           >
-            <div className="relative aspect-[16/10.2] overflow-hidden rounded-[4px]">
+            <div className="relative aspect-[16/10.2] overflow-hidden rounded-sm">
               {screen}
 
               {/* Glass sheen — under the notch */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 z-[5] bg-[linear-gradient(120deg,rgba(255,255,255,0.07)_0%,transparent_32%,transparent_68%,rgba(255,255,255,0.03)_100%)]"
+                className="pointer-events-none absolute inset-0 z-5 bg-[linear-gradient(120deg,rgba(255,255,255,0.07)_0%,transparent_32%,transparent_68%,rgba(255,255,255,0.03)_100%)]"
               />
 
               {/* Notch sits above all screen UI */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute left-1/2 top-0 z-50 h-[7%] w-[17%] max-w-[112px] -translate-x-1/2 rounded-b-[10px] bg-black shadow-[0_1px_0_rgba(255,255,255,0.06)]"
+                className="pointer-events-none absolute left-1/2 top-0 z-50 h-[7%] w-[17%] max-w-28 -translate-x-1/2 rounded-b-[10px] bg-black shadow-[0_1px_0_rgba(255,255,255,0.06)]"
               >
                 <span className="absolute left-1/2 top-[36%] h-[30%] w-[11%] -translate-x-1/2 rounded-full bg-[#2a2a2e] ring-1 ring-[#3a3a3e]" />
               </div>
@@ -289,11 +303,11 @@ function Laptop({
       </div>
 
       {/* Base — silver deck, Touch Bar, chiclet keys, chin + trackpad */}
-      <div className="relative z-[1]">
+      <div className="relative z-1">
         {/* Hinge */}
-        <div className="relative z-[2] mx-auto h-[6px] w-[96%] -translate-y-px rounded-full bg-[linear-gradient(180deg,#c8c8cc,#8e8e93_45%,#5c5c62)] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" />
+        <div className="relative z-2 mx-auto h-1.5 w-[96%] -translate-y-px rounded-full bg-[linear-gradient(180deg,#c8c8cc,#8e8e93_45%,#5c5c62)] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" />
 
-        <div className="relative -mt-[2px] overflow-hidden rounded-[8px_8px_16px_16px] border border-[#9a9a9e]/70 bg-[linear-gradient(180deg,#d4d4d8_0%,#b8b8bc_22%,#9c9ca0_70%,#7e7e82_100%)] px-[3.2%] pb-0 pt-[1.6%]">
+        <div className="relative -mt-0.5 overflow-hidden rounded-[8px_8px_16px_16px] border border-[#9a9a9e]/70 bg-[linear-gradient(180deg,#d4d4d8_0%,#b8b8bc_22%,#9c9ca0_70%,#7e7e82_100%)] px-[3.2%] pb-0 pt-[1.6%]">
           <SpeakerGrill className="absolute left-[0.9%] top-[18%] hidden h-[38%] w-[1.2%] sm:block" />
           <SpeakerGrill className="absolute right-[0.9%] top-[18%] hidden h-[38%] w-[1.2%] sm:block" />
 
@@ -302,7 +316,7 @@ function Laptop({
 
           {/* Chin + large glass trackpad */}
           <div className="relative mt-[2%] flex flex-col items-center pb-[3.2%] pt-[1.2%]">
-            <div className="relative aspect-[1.6/1] w-[50%] overflow-hidden rounded-[6px] border border-[#6a6a6e]/55 bg-[linear-gradient(180deg,#cfcfd3,#b4b4b8)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),inset_0_-1px_1px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.18)]">
+            <div className="relative aspect-[1.6/1] w-[50%] overflow-hidden rounded-md border border-[#6a6a6e]/55 bg-[linear-gradient(180deg,#cfcfd3,#b4b4b8)] shadow-[inset_0_1px_0_rgba(255,255,255,0.55),inset_0_-1px_1px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.18)]">
               <div
                 aria-hidden
                 className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.35)_0%,transparent_38%,transparent_68%,rgba(0,0,0,0.08)_100%)]"
@@ -313,7 +327,7 @@ function Laptop({
           {/* Integrated front chin edge */}
           <div
             aria-hidden
-            className="h-[5px] w-full bg-[linear-gradient(180deg,#8a8a8e,#5a5a5e)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
+            className="h-1.25 w-full bg-[linear-gradient(180deg,#8a8a8e,#5a5a5e)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
           />
         </div>
       </div>
@@ -336,15 +350,15 @@ function TouchBar() {
   return (
     <div
       aria-hidden
-      className="mb-[2%] flex h-[12px] items-stretch gap-[3px] rounded-[3px] bg-black p-[2px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] sm:h-[14px] md:h-[16px]"
+      className="mb-[2%] flex h-3 items-stretch gap-0.75 rounded-[3px] bg-black p-0.5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] sm:h-3.5 md:h-4"
     >
-      <div className="flex items-center rounded-[2px] bg-[#2c2c30] px-1.5 sm:px-2">
+      <div className="flex items-center rounded-xs bg-[#2c2c30] px-1.5 sm:px-2">
         <span className="text-[5px] uppercase tracking-wide text-white/70 sm:text-[6px]">esc</span>
       </div>
-      <div className="flex items-center gap-[3px] px-0.5">
-        <span className="size-[5px] rounded-[1px] bg-[#ff453a] sm:size-[6px]" />
-        <span className="size-[5px] rounded-full border border-white/50 sm:size-[6px]" />
-        <span className="size-[5px] rounded-[1px] border border-white/40 sm:size-[6px]" />
+      <div className="flex items-center gap-0.75 px-0.5">
+        <span className="size-1.25 rounded-[1px] bg-[#ff453a] sm:size-1.5" />
+        <span className="size-1.25 rounded-full border border-white/50 sm:size-1.5" />
+        <span className="size-1.25 rounded-[1px] border border-white/40 sm:size-1.5" />
       </div>
       <div className="flex min-w-0 flex-1 items-center justify-center">
         <span className="bg-[linear-gradient(90deg,#64d2ff,#70f0c0,#ffd60a,#ff9f0a,#bf5af2)] bg-clip-text text-[6px] font-semibold lowercase tracking-[0.2em] text-transparent sm:text-[7px] md:text-[8px]">
@@ -352,15 +366,15 @@ function TouchBar() {
         </span>
       </div>
       <div className="hidden items-center gap-1 sm:flex">
-        <span className="h-[2px] w-4 overflow-hidden rounded-full bg-white/20">
+        <span className="h-0.5 w-4 overflow-hidden rounded-full bg-white/20">
           <span className="block h-full w-1/2 bg-white/80" />
         </span>
-        <span className="h-[2px] w-4 overflow-hidden rounded-full bg-white/20">
+        <span className="h-0.5 w-4 overflow-hidden rounded-full bg-white/20">
           <span className="block h-full w-2/3 bg-white/80" />
         </span>
-        <span className="size-[6px] rounded-full bg-[conic-gradient(from_200deg,#64d2ff,#ff9f0a,#ffd60a,#70f0c0,#bf5af2,#64d2ff)]" />
+        <span className="size-1.5 rounded-full bg-[conic-gradient(from_200deg,#64d2ff,#ff9f0a,#ffd60a,#70f0c0,#bf5af2,#64d2ff)]" />
       </div>
-      <div className="aspect-square h-full rounded-[2px] bg-[#1c1c1e] ring-1 ring-white/10">
+      <div className="aspect-square h-full rounded-xs bg-[#1c1c1e] ring-1 ring-white/10">
         <span className="m-[22%] block size-[56%] rounded-[1.5px] bg-[radial-gradient(circle_at_35%_30%,#5a5a5e,#18181a)] ring-1 ring-white/15" />
       </div>
     </div>
@@ -473,7 +487,7 @@ function MacKeyboard() {
     <div
       ref={ref}
       aria-hidden
-      className="w-full rounded-[4px] bg-[linear-gradient(180deg,rgba(0,0,0,0.14),rgba(0,0,0,0.05))] p-[1%] shadow-[inset_0_1px_1px_rgba(0,0,0,0.2)]"
+      className="w-full rounded-sm bg-[linear-gradient(180deg,rgba(0,0,0,0.14),rgba(0,0,0,0.05))] p-[1%] shadow-[inset_0_1px_1px_rgba(0,0,0,0.2)]"
     >
       <div className="flex flex-col" style={{ gap }}>
         {KEY_ROWS.map((row, ri) => (
@@ -571,7 +585,7 @@ function SourcePhoto() {
 
 function EncodedResult() {
   return (
-    <div className="relative w-full max-w-[200px]">
+    <div className="relative w-full max-w-50">
       <div className="overflow-hidden rounded-lg border border-accent/55 bg-[#0b1018] shadow-[0_0_32px_color-mix(in_oklab,var(--accent-glow)_35%,transparent)]">
         <div className="relative aspect-video">
           <SourcePhoto />
@@ -668,7 +682,7 @@ function CompressionScene({
 
         <motion.div
           style={{ opacity: metaOpacity }}
-          className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-gradient-to-t from-black/75 to-transparent px-2.5 pb-2 pt-5"
+          className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-linear-to-t from-black/75 to-transparent px-2.5 pb-2 pt-5"
         >
           <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-accent">
             .dfc · ready

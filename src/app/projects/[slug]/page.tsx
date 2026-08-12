@@ -4,8 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ExternalLink, ImageOff } from "lucide-react";
 import { GithubIcon } from "@/components/ui/icons";
-import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
+import { ProjectGallery } from "@/components/sections/ProjectGallery";
 import type { Metadata } from "next";
 
 export function generateStaticParams() {
@@ -55,7 +56,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="relative min-h-screen overflow-hidden pb-20 pt-28 sm:pb-28 sm:pt-36">
-      <Parallax distance={60} className="absolute inset-x-0 -top-[10vh] -z-10 h-[90vh]">
+      <Parallax distance={60} className="absolute inset-x-0 top-[-10vh] -z-10 h-[90vh]">
         <div aria-hidden="true" className="light-wash h-full w-full opacity-70" />
       </Parallax>
 
@@ -217,34 +218,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </div>
 
         {project.gallery && project.gallery.length > 0 && (
-          <div className="mt-28">
-            <Reveal variant="mask">
-              <h2 className="mb-10 font-mono text-[10px] uppercase tracking-[0.2em] text-foreground/40">
-                Gallery
-              </h2>
-            </Reveal>
-
-            <RevealGroup
-              className="hide-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto pb-6"
-              stagger={0.05}
-            >
-              {project.gallery.map((img, i) => (
-                <RevealItem key={img} variant="scale">
-                  <div className="group w-[62vw] shrink-0 snap-center overflow-hidden rounded-[1.75rem] border border-border-subtle bg-background-elevated p-1.5 transition-colors duration-300 hover:border-accent/40 sm:w-[230px]">
-                    <div className="relative aspect-[9/19.5] overflow-hidden rounded-[1.4rem]">
-                      <Image
-                        src={img}
-                        alt={`${project.title} screenshot ${i + 1}`}
-                        fill
-                        sizes="(max-width: 640px) 62vw, 230px"
-                        className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                      />
-                    </div>
-                  </div>
-                </RevealItem>
-              ))}
-            </RevealGroup>
-          </div>
+          <ProjectGallery title={project.title} images={project.gallery} />
         )}
       </div>
     </div>

@@ -81,7 +81,7 @@ export function Contact() {
                 href={href}
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="edge-light group flex min-h-[5.5rem] h-full flex-col gap-3 bg-background p-5 transition-colors duration-500 active:bg-surface sm:p-6 sm:hover:bg-surface"
+                className="edge-light group flex min-h-22 h-full flex-col gap-3 bg-background p-5 transition-colors duration-500 active:bg-surface sm:p-6 sm:hover:bg-surface"
               >
                 <span className="flex items-center gap-2.5">
                   <Icon

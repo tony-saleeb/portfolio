@@ -12,7 +12,7 @@ export function ThemeToggle() {
   const mounted = useIsMounted();
 
   if (!mounted) {
-    return <div className="h-[18px] w-[18px]" aria-hidden="true" />;
+    return <div className="size-4.5" aria-hidden="true" />;
   }
 
   const mode = theme ?? "system";
