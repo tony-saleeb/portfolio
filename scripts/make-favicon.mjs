@@ -22,8 +22,11 @@ const inner = markRaw
   .replace(/^\s*<svg[^>]*>/i, "")
   .replace(/<\/svg>\s*$/i, "");
 
+// Dark plate so the mark stays visible in browser tabs / Vercel UI.
+// (Fully transparent favicons often look like "no logo".)
 const iconSvg = `<?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${canvas} ${canvas}" width="${canvas}" height="${canvas}">
+  <rect width="${canvas}" height="${canvas}" fill="#06080d"/>
   <svg x="${ox.toFixed(2)}" y="${oy.toFixed(2)}" width="${drawW.toFixed(2)}" height="${drawH.toFixed(2)}" viewBox="${vb.x} ${vb.y} ${vb.w} ${vb.h}" preserveAspectRatio="xMidYMid meet">
 ${inner}
   </svg>
