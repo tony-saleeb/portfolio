@@ -7,7 +7,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 const root = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), react()],
+  plugins: [tsconfigPaths({ projects: ["./tsconfig.vitest.json"] }), react()],
   test: {
     environment: "jsdom",
     globals: true,
@@ -16,6 +16,7 @@ export default defineConfig({
     exclude: ["e2e/**", "node_modules/**", ".next/**"],
     css: false,
     alias: {
+      "@": path.join(root, "src"),
       "next/image": path.join(root, "src/test/next-image-mock.tsx"),
     },
     coverage: {

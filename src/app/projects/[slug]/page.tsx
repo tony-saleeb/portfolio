@@ -8,6 +8,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
 import { ProjectGallery } from "@/components/sections/ProjectGallery";
 import type { Metadata } from "next";
+import { getSiteUrl } from "@/lib/site";
 
 export function generateStaticParams() {
   return projectsData.map((p) => ({
@@ -25,21 +26,24 @@ export async function generateMetadata({
 
   if (!project) return {};
 
-  const title = `${project.title} | Antony Saleeb`;
+  const title = project.title;
   const description = project.description;
+  const url = `${getSiteUrl()}/projects/${slug}`;
 
   return {
     title,
     description,
+    alternates: { canonical: url },
     openGraph: {
-      title,
+      title: `${project.title} | Antony Saleeb`,
       description,
       type: "article",
+      url,
       images: project.image ? [{ url: project.image }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: `${project.title} | Antony Saleeb`,
       description,
       images: project.image ? [project.image] : undefined,
     },
