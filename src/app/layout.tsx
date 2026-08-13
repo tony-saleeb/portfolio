@@ -6,6 +6,8 @@ import { Footer } from "@/components/layout/Footer";
 import { SectionRail } from "@/components/ui/SectionRail";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { getSiteUrl, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/lib/site";
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
@@ -25,15 +27,40 @@ const plexMono = IBM_Plex_Mono({
   preload: false,
 });
 
-// Set NEXT_PUBLIC_SITE_URL once this is deployed to its real domain -
-// required for correct absolute OG/Twitter image URLs and sitemap entries.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://antony-saleeb-portfolio.vercel.app";
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Antony Saleeb | Full-Stack & Applied-AI Engineer",
-  description:
-    "Portfolio of Antony Saleeb — real-time systems and applied-AI products, from orchestrated PyTorch models to the Flutter and Next.js apps that ship them.",
+  title: {
+    default: SITE_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: `${SITE_NAME} Portfolio`,
+  authors: [{ name: SITE_NAME, url: siteUrl }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: "portfolio",
+  keywords: [
+    "Antony Saleeb",
+    "full-stack engineer",
+    "applied AI",
+    "Next.js",
+    "Flutter",
+    "PyTorch",
+    "Cairo",
+  ],
+  alternates: {
+    canonical: siteUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
@@ -43,18 +70,25 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
   },
   openGraph: {
-    title: "Antony Saleeb | Full-Stack & Applied-AI Engineer",
-    description:
-      "Real-time systems and applied-AI products, built end to end.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     type: "website",
     locale: "en_US",
-    siteName: "Antony Saleeb Portfolio",
+    url: siteUrl,
+    siteName: `${SITE_NAME} Portfolio`,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Antony Saleeb | Full-Stack & Applied-AI Engineer",
-    description: "Real-time systems and applied-AI products, built end to end.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
   },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? {
+        verification: {
+          google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+        },
+      }
+    : {}),
 };
 
 export const viewport: Viewport = {
@@ -97,6 +131,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <JsonLd />
           <ScrollProgress />
           <Navbar />
           <SectionRail />

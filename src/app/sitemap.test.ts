@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { projectsData } from "@/data/projects";
-
-const DEFAULT_SITE = "https://antony-saleeb-portfolio.vercel.app";
+import { DEFAULT_SITE_URL } from "@/lib/site";
 
 describe("sitemap", () => {
   afterEach(() => {
@@ -14,9 +13,9 @@ describe("sitemap", () => {
     const entries = sitemap();
     const urls = entries.map((e) => e.url);
 
-    expect(urls).toContain(DEFAULT_SITE);
+    expect(urls).toContain(DEFAULT_SITE_URL);
     for (const project of projectsData) {
-      expect(urls).toContain(`${DEFAULT_SITE}/projects/${project.slug}`);
+      expect(urls).toContain(`${DEFAULT_SITE_URL}/projects/${project.slug}`);
     }
     expect(entries).toHaveLength(1 + projectsData.length);
   });
@@ -41,6 +40,6 @@ describe("robots", () => {
     const { default: robots } = await import("@/app/robots");
     const result = robots();
     expect(result.rules).toEqual({ userAgent: "*", allow: "/" });
-    expect(result.sitemap).toBe(`${DEFAULT_SITE}/sitemap.xml`);
+    expect(result.sitemap).toBe(`${DEFAULT_SITE_URL}/sitemap.xml`);
   });
 });

@@ -20,9 +20,14 @@ describe("project case-study page", () => {
 
   it("builds metadata from the matching project", async () => {
     const meta = await generateMetadata({ params: Promise.resolve({ slug: "techtips" }) });
-    expect(meta.title).toBe("TechTips | Antony Saleeb");
+    expect(meta.title).toBe("TechTips");
     expect(meta.description).toContain("OS Tips");
-    expect(meta.openGraph?.type).toBe("article");
+    expect(meta.alternates?.canonical).toBe(
+      "https://antony-saleeb-portfolio.vercel.app/projects/techtips"
+    );
+    expect(meta.openGraph?.url).toBe(
+      "https://antony-saleeb-portfolio.vercel.app/projects/techtips"
+    );
   });
 
   it("returns empty metadata for an unknown slug", async () => {
