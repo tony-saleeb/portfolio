@@ -10,11 +10,12 @@ import {
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { GhostMark } from "@/components/motion/GhostMark";
 import { Parallax } from "@/components/motion/Parallax";
+import { SkillMark } from "@/components/ui/SkillMark";
 import { useIsMobile } from "@/hooks/useMediaQuery";
 import { useScrollTarget } from "@/hooks/useScrollTarget";
 import { useScrollMotion } from "@/hooks/useScrollMotion";
 
-const skillGroups = [
+export const skillGroups = [
   {
     title: "Frontend",
     skills: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
@@ -69,7 +70,10 @@ export function Skills() {
               key={`${item}-${i}`}
               className="flex shrink-0 items-center gap-10 font-mono text-sm uppercase tracking-[0.18em] text-foreground/45"
             >
-              {item}
+              <span className="flex items-center gap-2.5">
+                <SkillMark name={item} className="text-foreground/40" />
+                {item}
+              </span>
               <span className="h-1 w-1 rounded-full bg-accent/60" />
             </span>
           ))}
@@ -170,7 +174,10 @@ function StackColumn({
             key={skill}
             className="flex items-center gap-2.5 text-foreground/70 transition-colors duration-300 group-hover:text-foreground/90"
           >
-            <span className="h-px w-3 bg-accent/50 transition-all duration-500 group-hover:w-5" />
+            <SkillMark
+              name={skill}
+              className="shrink-0 text-foreground/40 transition-colors duration-300 group-hover:text-accent"
+            />
             {skill}
           </li>
         ))}

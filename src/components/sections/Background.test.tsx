@@ -21,5 +21,7 @@ describe("Skills", () => {
     expect(screen.getAllByText("Next.js").length).toBeGreaterThan(0);
     expect(screen.getAllByText("PyTorch").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Flutter").length).toBeGreaterThan(0);
+    const stack = document.getElementById("stack");
+    expect(stack?.querySelectorAll("svg").length).toBeGreaterThan(0);
   });
 });
