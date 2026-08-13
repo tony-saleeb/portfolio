@@ -51,13 +51,13 @@ function PinnedBeat() {
   const titleOpacity = useTransform(p, [0, 0.06], [0, 1]);
 
   const laptopY = useTransform(p, [0, 0.1], [36, 0]);
-  const laptopOpacity = useTransform(p, [0, 0.08], [0.7, 1]);
 
   const lid = useTransform(p, [0.06, 0.18], [-102, -12]);
-  const screenOn = useTransform(p, [0.1, 0.16], [0, 1]);
+  // Screen glass is always on; content fades in as the lid clears the base
+  const screenOn = useTransform(p, [0.07, 0.12], [0, 1]);
   // Long assemble + hold so the shard fly-in can be savored
-  const logoOpacity = useTransform(p, [0.12, 0.18, 0.52, 0.58], [0, 1, 1, 0]);
-  const logoAssemble = useTransform(p, [0.12, 0.48], [0, 1]);
+  const logoOpacity = useTransform(p, [0.1, 0.16, 0.52, 0.58], [0, 1, 1, 0]);
+  const logoAssemble = useTransform(p, [0.1, 0.48], [0, 1]);
   const encodeOpacity = useTransform(p, [0.54, 0.6], [0, 1]);
   const hudOpacity = useTransform(p, [0.56, 0.64], [0, 1]);
   const markX = useTransform(p, [0, 1], ["-8%", "10%"]);
@@ -97,23 +97,34 @@ function PinnedBeat() {
         <div className="relative z-1 mx-auto flex min-h-0 w-full max-w-120 flex-1 flex-col">
           <FitScale className="flex w-full flex-col items-center gap-3 pt-3">
             <motion.div
-              style={{ y: laptopY, opacity: laptopOpacity }}
+              style={{
+                y: laptopY,
+                transformStyle: "preserve-3d",
+              }}
               className="w-full"
             >
               <Laptop
                 lidAngle={lid}
                 screen={
-                  <motion.div style={{ opacity: screenOn }} className="absolute inset-0 bg-black">
+                  <>
+                    {/* Panel fill — charcoal, not page-black, or the lid reads as a hole */}
+                    <div className="absolute inset-0 bg-[#1a1d24]" />
+                    {/* Soft power bloom while the lid swings open */}
+                    <motion.div
+                      aria-hidden
+                      style={{ opacity: screenOn }}
+                      className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(34,211,238,0.22),transparent_58%)]"
+                    />
                     <motion.div
                       style={{ opacity: logoOpacity }}
                       className="absolute inset-0 z-10"
                     >
                       <DeepFractLogoAssemble assemble={logoAssemble} />
                     </motion.div>
-                    <motion.div style={{ opacity: encodeOpacity }} className="absolute inset-0">
+                    <motion.div style={{ opacity: encodeOpacity }} className="absolute inset-0 z-10">
                       <CompressionScene progress={p} stage={stage} mapStart={0.58} mapEnd={0.94} />
                     </motion.div>
-                  </motion.div>
+                  </>
                 }
               />
             </motion.div>
@@ -167,7 +178,7 @@ function FitScale({
   return (
     <div
       ref={parentRef}
-      className="flex min-h-0 w-full flex-1 items-start justify-center overflow-hidden"
+      className="flex min-h-0 w-full flex-1 items-start justify-center"
     >
       <div className="w-full" style={{ height: fit.height || undefined }}>
         <div
@@ -176,6 +187,7 @@ function FitScale({
           style={{
             transform: `scale(${fit.scale})`,
             transformOrigin: "top center",
+            transformStyle: "preserve-3d",
             width: "100%",
           }}
         >
@@ -257,43 +269,46 @@ function Laptop({
             transformStyle: "preserve-3d",
             willChange: "transform",
           }}
-          className="relative"
+          className="relative rounded-[14px] bg-[#c8c8cc]"
         >
-          {/* Lid back (Space Gray aluminum) */}
+          {/* Lid back — solid silver, same family as the deck */}
           <div
             aria-hidden
-            className="absolute inset-0 rounded-[14px] border border-[#5c5c62]/80 bg-[linear-gradient(165deg,#8a8a90_0%,#5c5c62_28%,#3e3e42_72%,#2c2c2e_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]"
+            className="absolute inset-0 rounded-[14px] border border-[#9a9a9e]"
             style={{
               transform: "rotateX(180deg) translateZ(1px)",
-              backfaceVisibility: "hidden",
-              WebkitBackfaceVisibility: "hidden",
+              background:
+                "linear-gradient(165deg, #e4e4e8 0%, #c8c8cc 32%, #b0b0b4 68%, #9a9a9e 100%)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
             }}
           >
-            <div className="absolute inset-[12%] rounded-xs bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.06),transparent_65%)]" />
+            <div
+              className="absolute inset-[12%] rounded-xs"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, rgba(255,255,255,0.28), rgba(180,180,184,0.4) 65%)",
+              }}
+            />
           </div>
 
           {/* Display face — aluminum lip, image fills the panel */}
           <div
-            style={{
-              transform: "translateZ(1px)",
-              backfaceVisibility: "hidden",
-              WebkitBackfaceVisibility: "hidden",
-            }}
-            className="relative overflow-hidden rounded-[12px_12px_6px_6px] border border-[#5c5c62]/70 bg-[#2c2c2e] p-[0.5%]"
+            style={{ transform: "translateZ(1px)" }}
+            className="relative overflow-hidden rounded-[12px_12px_6px_6px] border border-[#5c5c62] bg-[#3a3a40] p-[0.5%]"
           >
-            <div className="relative aspect-[16/10.2] overflow-hidden rounded-sm">
+            <div className="relative aspect-[16/10.2] overflow-hidden rounded-sm bg-[#1a1d24] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
               {screen}
 
               {/* Glass sheen — under the notch */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 z-5 bg-[linear-gradient(120deg,rgba(255,255,255,0.07)_0%,transparent_32%,transparent_68%,rgba(255,255,255,0.03)_100%)]"
+                className="pointer-events-none absolute inset-0 z-5 bg-[linear-gradient(120deg,rgba(255,255,255,0.14)_0%,transparent_32%,transparent_68%,rgba(255,255,255,0.06)_100%)]"
               />
 
               {/* Notch sits above all screen UI */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute left-1/2 top-0 z-50 h-[7%] w-[17%] max-w-28 -translate-x-1/2 rounded-b-[10px] bg-black shadow-[0_1px_0_rgba(255,255,255,0.06)]"
+                className="pointer-events-none absolute left-1/2 top-0 z-50 h-[7%] w-[17%] max-w-28 -translate-x-1/2 rounded-b-[10px] bg-[#0e1014] shadow-[0_1px_0_rgba(255,255,255,0.08)]"
               >
                 <span className="absolute left-1/2 top-[36%] h-[30%] w-[11%] -translate-x-1/2 rounded-full bg-[#2a2a2e] ring-1 ring-[#3a3a3e]" />
               </div>
