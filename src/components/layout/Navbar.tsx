@@ -1,20 +1,36 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { BrandMark } from "@/components/ui/BrandMark";
 
 const navLinks = [
-  { name: "Work", href: "#work" },
-  { name: "Background", href: "#background" },
-  { name: "Stack", href: "#stack" },
-  { name: "Contact", href: "#contact" },
+  { name: "Work", href: "/#work" },
+  { name: "Background", href: "/#background" },
+  { name: "Stack", href: "/#stack" },
+  { name: "Contact", href: "/#contact" },
 ];
 
+function scrollToId(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
+
 export function Navbar() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [backdropReady, setBackdropReady] = useState(false);
+
+  // Client nav to /#section from a project page does not always scroll.
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const id = window.location.hash.slice(1);
+    if (!id) return;
+    const frame = window.requestAnimationFrame(() => scrollToId(id));
+    return () => window.cancelAnimationFrame(frame);
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 24);
@@ -24,10 +40,14 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setBackdropReady(false);
+      return;
+    }
 
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const arm = window.setTimeout(() => setBackdropReady(true), 120);
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsOpen(false);
@@ -35,6 +55,7 @@ export function Navbar() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      window.clearTimeout(arm);
       document.body.style.overflow = prev;
       window.removeEventListener("keydown", handleKeyDown);
     };
@@ -65,13 +86,20 @@ export function Navbar() {
 
           <div className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
                 className="link-underline font-mono text-[11px] uppercase tracking-[0.16em] text-foreground/60 transition-colors hover:text-foreground"
+                onClick={(e) => {
+                  const id = link.href.split("#")[1];
+                  if (pathname !== "/" || !id) return;
+                  e.preventDefault();
+                  scrollToId(id);
+                  window.history.pushState(null, "", link.href);
+                }}
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
             <div className="ml-1 flex items-center gap-5 border-l border-border-subtle pl-5">
               <ThemeToggle />
@@ -106,14 +134,21 @@ export function Navbar() {
         >
           <div className="flex flex-col items-stretch gap-1 px-3">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
                 href={link.href}
                 className="rounded-xl px-4 py-3.5 font-mono text-sm uppercase tracking-[0.16em] text-foreground/85 transition-colors active:bg-surface hover:bg-surface hover:text-accent"
-                onClick={() => setIsOpen(false)}
+                onClick={(e) => {
+                  setIsOpen(false);
+                  const id = link.href.split("#")[1];
+                  if (pathname !== "/" || !id) return;
+                  e.preventDefault();
+                  scrollToId(id);
+                  window.history.pushState(null, "", link.href);
+                }}
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
             <a
               href={`/${encodeURIComponent("Antonyy Saleeb's CV.pdf")}`}
@@ -131,8 +166,7 @@ export function Navbar() {
         </div>
       )}
 
-      {/* Tap outside to close */}
-      {isOpen && (
+      {isOpen && backdropReady && (
         <button
           type="button"
           aria-label="Close menu"

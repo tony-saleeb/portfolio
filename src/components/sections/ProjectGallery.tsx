@@ -72,6 +72,9 @@ export function ProjectGallery({
 
         <div
           ref={scrollerRef}
+          tabIndex={0}
+          role="region"
+          aria-label={`${title} screenshots`}
           className="hide-scrollbar min-w-0 flex-1 overflow-x-auto overscroll-x-contain pb-6"
         >
           <RevealGroup

@@ -91,13 +91,19 @@ export function AuroraField({
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      w = Math.max(1, Math.round(rect.width * SCALE));
-      h = Math.max(1, Math.round(rect.height * SCALE));
+      const rw = Number.isFinite(rect.width) ? rect.width : 0;
+      const rh = Number.isFinite(rect.height) ? rect.height : 0;
+      // Skip until the canvas has a real layout box — otherwise paint gets NaNs.
+      if (rw < 1 || rh < 1) return;
+      w = Math.max(1, Math.round(rw * SCALE));
+      h = Math.max(1, Math.round(rh * SCALE));
       canvas.width = w;
       canvas.height = h;
     };
 
     const paint = () => {
+      if (w < 1 || h < 1) return;
+
       ctx.clearRect(0, 0, w, h);
       ctx.globalCompositeOperation = light ? "source-over" : "lighter";
 
@@ -105,6 +111,14 @@ export function AuroraField({
       const peak = light ? 0.28 : 0.5;
 
       const draw = (x: number, y: number, radius: number, rgb: number[], alpha: number) => {
+        if (
+          !Number.isFinite(x) ||
+          !Number.isFinite(y) ||
+          !Number.isFinite(radius) ||
+          radius <= 0
+        ) {
+          return;
+        }
         const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
         g.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`);
         g.addColorStop(0.55, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha * 0.32})`);
@@ -170,6 +184,7 @@ export function AuroraField({
 
     const onPointerMove = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return;
       pointer.tx = (e.clientX - rect.left) / rect.width;
       pointer.ty = (e.clientY - rect.top) / rect.height;
     };
