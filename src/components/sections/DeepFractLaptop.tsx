@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import { useScrollTarget } from "@/hooks/useScrollTarget";
 import { useScrollMotion } from "@/hooks/useScrollMotion";
+import { useIsMobile } from "@/hooks/useMediaQuery";
 import { DeepFractLogoAssemble } from "@/components/sections/DeepFractLogoAssemble";
 
 const STAGES = [
@@ -38,6 +39,7 @@ export function DeepFractLaptop() {
 
 function PinnedBeat() {
   const trackRef = useRef<HTMLDivElement>(null);
+  const mobile = useIsMobile();
   const { scrollYProgress } = useScrollTarget(trackRef, ["start start", "end end"]);
   const p = useScrollMotion(scrollYProgress);
   const [stage, setStage] = useState(0);
@@ -50,9 +52,16 @@ function PinnedBeat() {
   const titleY = useTransform(p, [0, 0.08], [14, 0]);
   const titleOpacity = useTransform(p, [0, 0.06], [0, 1]);
 
-  const laptopY = useTransform(p, [0, 0.1], [36, 0]);
+  const laptopY = useTransform(p, [0, 0.1], mobile ? [18, 0] : [36, 0]);
 
-  const lid = useTransform(p, [0.06, 0.18], [-102, -12]);
+  // Desktop: closed → open, passing edge-on. Mobile stays on the screen side of
+  // -90° so WebKit doesn't flicker the lid at the silhouette frame, and the
+  // swing is spread over more scroll so touch momentum doesn't stutter it.
+  const lid = useTransform(
+    p,
+    mobile ? [0.04, 0.3] : [0.06, 0.18],
+    mobile ? [-58, 0] : [-102, -12]
+  );
   // Screen glass is always on; content fades in as the lid clears the base
   const screenOn = useTransform(p, [0.07, 0.12], [0, 1]);
   // Long assemble + hold so the shard fly-in can be savored
@@ -64,7 +73,7 @@ function PinnedBeat() {
 
   return (
     <div ref={trackRef} className="relative h-[280vh]">
-      <div className="sticky top-0 flex h-svh flex-col overflow-hidden bg-background px-5 pt-[max(5.25rem,calc(env(safe-area-inset-top)+4.25rem))] pb-4">
+      <div className="sticky top-0 flex h-svh flex-col overflow-x-clip bg-background px-5 pt-[max(5.25rem,calc(env(safe-area-inset-top)+4.25rem))] pb-4">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 light-wash opacity-35" />
 
         {/* Watermark — inside sticky (opaque bg would hide a section-level GhostMark) */}
@@ -95,7 +104,10 @@ function PinnedBeat() {
 
         {/* Scales the whole laptop stack so the chin/trackpad never clips */}
         <div className="relative z-1 mx-auto flex min-h-0 w-full max-w-120 flex-1 flex-col">
-          <FitScale className="flex w-full flex-col items-center gap-3 pt-3">
+          <FitScale
+            mode={mobile ? "width" : "transform"}
+            className="flex w-full flex-col items-center gap-3 pt-3"
+          >
             <motion.div
               style={{
                 y: laptopY,
@@ -105,6 +117,7 @@ function PinnedBeat() {
             >
               <Laptop
                 lidAngle={lid}
+                simple={mobile}
                 screen={
                   <>
                     {/* Panel fill — charcoal, not page-black, or the lid reads as a hole */}
@@ -131,7 +144,7 @@ function PinnedBeat() {
 
             <motion.div
               style={{ opacity: hudOpacity }}
-              className="w-full rounded-full border border-border-subtle bg-background/90 px-4 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-md"
+              className="w-full rounded-full border border-border-subtle bg-background/90 px-4 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:backdrop-blur-md"
             >
               <StageList stage={stage} />
             </motion.div>
@@ -146,9 +159,12 @@ function PinnedBeat() {
 function FitScale({
   children,
   className = "",
+  mode = "transform",
 }: {
   children: ReactNode;
   className?: string;
+  /** `transform` is precise but flattens nested 3D on WebKit. `width` reflows. */
+  mode?: "transform" | "width";
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -161,9 +177,25 @@ function FitScale({
 
     const measure = () => {
       const available = parent.clientHeight;
-      // scrollHeight ignores CSS transform — natural size
+      if (available <= 0) return;
+
+      if (mode === "width") {
+        const currentWidth = content.getBoundingClientRect().width;
+        const currentHeight = content.scrollHeight;
+        if (currentWidth <= 0 || currentHeight <= 0) return;
+        const parentWidth = parent.clientWidth || currentWidth;
+        const naturalHeight = currentHeight * (parentWidth / currentWidth);
+        const scale = Math.min(1, available / naturalHeight);
+        setFit((prev) =>
+          Math.abs(prev.scale - scale) < 0.01 && Math.abs(prev.height - naturalHeight * scale) < 2
+            ? prev
+            : { scale, height: naturalHeight * scale }
+        );
+        return;
+      }
+
       const needed = content.scrollHeight;
-      if (available <= 0 || needed <= 0) return;
+      if (needed <= 0) return;
       const scale = Math.min(1, available / needed);
       setFit({ scale, height: needed * scale });
     };
@@ -173,7 +205,27 @@ function FitScale({
     ro.observe(parent);
     ro.observe(content);
     return () => ro.disconnect();
-  }, []);
+  }, [mode]);
+
+  if (mode === "width") {
+    return (
+      <div
+        ref={parentRef}
+        className="flex min-h-0 w-full flex-1 items-start justify-center"
+      >
+        <div
+          ref={contentRef}
+          className={className}
+          style={{
+            width: `${fit.scale * 100}%`,
+            transformStyle: "preserve-3d",
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -251,14 +303,20 @@ function StaticBeat() {
 function Laptop({
   lidAngle,
   screen,
+  simple = false,
 }: {
   lidAngle: MotionValue<number>;
   screen: ReactNode;
+  simple?: boolean;
 }) {
   return (
     <div
       className="relative mx-auto"
-      style={{ perspective: "2000px", perspectiveOrigin: "50% 72%" }}
+      style={{
+        perspective: simple ? "900px" : "2000px",
+        perspectiveOrigin: "50% 100%",
+        transformStyle: "preserve-3d",
+      }}
     >
       {/* Lid */}
       <div style={{ transformStyle: "preserve-3d" }}>
@@ -267,33 +325,43 @@ function Laptop({
             rotateX: lidAngle,
             transformOrigin: "center bottom",
             transformStyle: "preserve-3d",
-            willChange: "transform",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transformPerspective: simple ? 900 : 2000,
           }}
           className="relative rounded-[14px] bg-[#c8c8cc]"
         >
-          {/* Lid back — solid silver, same family as the deck */}
-          <div
-            aria-hidden
-            className="absolute inset-0 rounded-[14px] border border-[#9a9a9e]"
-            style={{
-              transform: "rotateX(180deg) translateZ(1px)",
-              background:
-                "linear-gradient(165deg, #e4e4e8 0%, #c8c8cc 32%, #b0b0b4 68%, #9a9a9e 100%)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
-            }}
-          >
+          {/* Lid back — desktop only. On mobile we never close past edge-on,
+              so the back face only causes z-fighting flicker. */}
+          {simple ? null : (
             <div
-              className="absolute inset-[12%] rounded-xs"
+              aria-hidden
+              className="absolute inset-0 rounded-[14px] border border-[#9a9a9e]"
               style={{
+                transform: "rotateX(180deg) translateZ(2px)",
+                backfaceVisibility: "hidden",
                 background:
-                  "radial-gradient(ellipse at center, rgba(255,255,255,0.28), rgba(180,180,184,0.4) 65%)",
+                  "linear-gradient(165deg, #e4e4e8 0%, #c8c8cc 32%, #b0b0b4 68%, #9a9a9e 100%)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
               }}
-            />
-          </div>
+            >
+              <div
+                className="absolute inset-[12%] rounded-xs"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at center, rgba(255,255,255,0.28), rgba(180,180,184,0.4) 65%)",
+                }}
+              />
+            </div>
+          )}
 
           {/* Display face — aluminum lip, image fills the panel */}
           <div
-            style={{ transform: "translateZ(1px)" }}
+            style={{
+              transform: "translateZ(2px)",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+            }}
             className="relative overflow-hidden rounded-[12px_12px_6px_6px] border border-[#5c5c62] bg-[#3a3a40] p-[0.5%]"
           >
             <div className="relative aspect-[16/10.2] overflow-hidden rounded-sm bg-[#1a1d24] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
@@ -318,7 +386,7 @@ function Laptop({
       </div>
 
       {/* Base — silver deck, Touch Bar, chiclet keys, chin + trackpad */}
-      <div className="relative z-1">
+      <div className="relative z-1" style={{ transform: "translateZ(0)" }}>
         {/* Hinge */}
         <div className="relative z-2 mx-auto h-1.5 w-[96%] -translate-y-px rounded-full bg-[linear-gradient(180deg,#c8c8cc,#8e8e93_45%,#5c5c62)] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" />
 
@@ -327,7 +395,7 @@ function Laptop({
           <SpeakerGrill className="absolute right-[0.9%] top-[18%] hidden h-[38%] w-[1.2%] sm:block" />
 
           <TouchBar />
-          <MacKeyboard />
+          {simple ? <SimpleKeyboard /> : <MacKeyboard />}
 
           {/* Chin + large glass trackpad */}
           <div className="relative mt-[2%] flex flex-col items-center pb-[3.2%] pt-[1.2%]">
@@ -470,6 +538,24 @@ const KEY_ROWS: KeySpec[][] = [
     { u: 1, label: "option" },
   ],
 ];
+
+/** Five painted rows — same silhouette as the chiclet deck, ~70 fewer DOM nodes. */
+function SimpleKeyboard() {
+  return (
+    <div
+      aria-hidden
+      className="flex w-full flex-col gap-0.5 rounded-sm bg-[linear-gradient(180deg,rgba(0,0,0,0.14),rgba(0,0,0,0.05))] p-[1%] shadow-[inset_0_1px_1px_rgba(0,0,0,0.2)]"
+    >
+      {[0, 1, 2, 3, 4].map((i) => (
+        <div
+          key={i}
+          className="w-full rounded-xs border border-black/50 bg-[linear-gradient(180deg,#3f3f43_0%,#2c2c30_52%,#1d1d21_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]"
+          style={{ height: 11, opacity: 0.92 - i * 0.04 }}
+        />
+      ))}
+    </div>
+  );
+}
 
 /** Measure deck width → set a real px --key so width and height stay equal. */
 function MacKeyboard() {
