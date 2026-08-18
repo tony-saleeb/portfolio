@@ -1,0 +1,16 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.antonysaleeb.me" }],
+      "destination": "https://antonysaleeb.me/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "antony-saleeb-portfolio.vercel.app" }],
+      "destination": "https://antonysaleeb.me/:path*",
+      "permanent": true
+    }
+  ]
+}

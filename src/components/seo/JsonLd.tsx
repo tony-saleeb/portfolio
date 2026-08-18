@@ -15,6 +15,18 @@ export function JsonLd() {
         publisher: { "@id": `${url}/#person` },
       },
       {
+        "@type": "Organization",
+        "@id": `${url}/#organization`,
+        name: SITE_NAME,
+        url,
+        logo: {
+          "@type": "ImageObject",
+          url: `${url}/icon-192.png`,
+          width: 192,
+          height: 192,
+        },
+      },
+      {
         "@type": "Person",
         "@id": `${url}/#person`,
         name: SITE_NAME,

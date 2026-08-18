@@ -23,11 +23,9 @@ describe("project case-study page", () => {
     expect(meta.title).toBe("TechTips");
     expect(meta.description).toContain("OS Tips");
     expect(meta.alternates?.canonical).toBe(
-      "https://antony-saleeb-portfolio.vercel.app/projects/techtips"
+      "https://antonysaleeb.me/projects/techtips"
     );
-    expect(meta.openGraph?.url).toBe(
-      "https://antony-saleeb-portfolio.vercel.app/projects/techtips"
-    );
+    expect(meta.openGraph?.url).toBe("https://antonysaleeb.me/projects/techtips");
   });
 
   it("returns empty metadata for an unknown slug", async () => {

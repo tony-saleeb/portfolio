@@ -10,8 +10,13 @@ describe("JsonLd", () => {
     expect(script).toBeTruthy();
     const data = JSON.parse(script?.textContent ?? "{}");
     const types = data["@graph"].map((node: { "@type": string }) => node["@type"]);
-    expect(types).toEqual(expect.arrayContaining(["WebSite", "Person", "ProfilePage"]));
-    expect(data["@graph"][1].name).toBe(SITE_NAME);
+    expect(types).toEqual(
+      expect.arrayContaining(["WebSite", "Organization", "Person", "ProfilePage"])
+    );
+    const person = data["@graph"].find((node: { "@type": string }) => node["@type"] === "Person");
+    const org = data["@graph"].find((node: { "@type": string }) => node["@type"] === "Organization");
+    expect(person.name).toBe(SITE_NAME);
     expect(data["@graph"][0].url).toBe(DEFAULT_SITE_URL);
+    expect(org.logo.url).toBe(`${DEFAULT_SITE_URL}/icon-192.png`);
   });
 });
