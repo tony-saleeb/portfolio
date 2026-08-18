@@ -7,7 +7,7 @@ describe("getSiteUrl", () => {
     vi.resetModules();
   });
 
-  it("defaults to the live Vercel host", async () => {
+  it("defaults to the canonical domain", async () => {
     const { getSiteUrl } = await import("@/lib/site");
     expect(getSiteUrl()).toBe(DEFAULT_SITE_URL);
   });
