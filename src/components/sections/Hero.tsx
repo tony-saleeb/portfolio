@@ -7,6 +7,7 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { useIsMobile } from "@/hooks/useMediaQuery";
 import { useScrollTarget } from "@/hooks/useScrollTarget";
 import { useScrollMotion } from "@/hooks/useScrollMotion";
+import { RESUME_HREF } from "@/lib/site";
 
 const NAME = "Antony Saleeb";
 
@@ -134,7 +135,7 @@ export function Hero() {
 
             <div className="flex items-center justify-center gap-8 sm:justify-start">
               <a
-                href={`/${encodeURIComponent("Antonyy Saleeb's CV.pdf")}`}
+                href={RESUME_HREF}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="link-underline py-2 font-mono text-xs uppercase tracking-[0.18em] text-foreground/60 transition-colors hover:text-foreground"

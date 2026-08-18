@@ -43,7 +43,7 @@ describe("Navbar", () => {
     render(<Navbar />);
     const resume = screen.getByRole("link", { name: "Résumé" });
     expect(resume).toHaveAttribute("target", "_blank");
-    expect(resume.getAttribute("href")).toContain("Antonyy");
+    expect(resume).toHaveAttribute("href", "/Antony_Saleeb_Fakhry_CV.pdf");
   });
 
   it("scrolls to the section when already on the home page", async () => {
