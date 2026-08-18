@@ -22,9 +22,9 @@ const STAGES = [
 
 /**
  * Scroll-pinned DeepFract beat:
- * Desktop: settle on a laptop → lid opens → encode plays on the screen.
- * Phone: lid stays flat (3D rotateX shears on iOS) and FitScale keeps
- * title + chassis + HUD inside the viewport.
+ * settle on a laptop → lid opens → encode plays on the screen.
+ * Same lid swing on phone and desktop. On iOS, FitScale uses zoom (not
+ * transform: scale) so the 3D perspective is not flattened.
  */
 export function DeepFractLaptop() {
   const reduced = useReducedMotion();
@@ -91,10 +91,10 @@ function PinnedBeat() {
           </p>
         </motion.div>
 
-        {/* Scales the whole laptop stack so the chin/trackpad never clips */}
-        <div className="relative z-1 mx-auto flex min-h-0 w-full max-w-120 flex-1 flex-col">
-          <FitScale className="flex w-full flex-col items-center gap-3 pt-2 md:pt-3">
-            <div className="w-full max-md:max-w-78 md:transform-3d">
+        {/* Laptop is centered in the leftover viewport; HUD sits on the bottom. */}
+        <div className="relative z-1 mx-auto flex min-h-0 w-full max-w-120 flex-1 flex-col pb-12 md:pb-14">
+          <FitScale className="flex w-full flex-col items-center">
+            <div className="w-full max-md:max-w-[22.5rem] transform-3d">
               <Laptop
                 lidAngle={lid}
                 screen={
@@ -120,14 +120,14 @@ function PinnedBeat() {
                 }
               />
             </div>
-
-            <motion.div
-              style={{ opacity: hudOpacity }}
-              className="w-full rounded-full border border-border-subtle bg-background/90 px-4 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:backdrop-blur-md"
-            >
-              <StageList stage={stage} />
-            </motion.div>
           </FitScale>
+
+          <motion.div
+            style={{ opacity: hudOpacity }}
+            className="pointer-events-none absolute inset-x-0 bottom-1 z-2 w-full rounded-full border border-border-subtle bg-background/90 px-4 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:bottom-2 md:backdrop-blur-md"
+          >
+            <StageList stage={stage} />
+          </motion.div>
         </div>
       </div>
     </div>
@@ -144,7 +144,7 @@ function FitScale({
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [fit, setFit] = useState({ scale: 1, height: 0 });
+  const [fit, setFit] = useState({ scale: 1, height: 0, zoom: false });
 
   useEffect(() => {
     const parent = parentRef.current;
@@ -156,32 +156,49 @@ function FitScale({
       const needed = content.scrollHeight;
       if (available <= 0 || needed <= 0) return;
       const scale = Math.min(1, available / needed);
-      setFit({ scale, height: needed * scale });
+      const zoom = window.matchMedia("(max-width: 767px)").matches;
+      setFit({ scale, height: needed * scale, zoom });
     };
 
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(parent);
     ro.observe(content);
-    return () => ro.disconnect();
+    const mql = window.matchMedia("(max-width: 767px)");
+    mql.addEventListener("change", measure);
+    return () => {
+      ro.disconnect();
+      mql.removeEventListener("change", measure);
+    };
   }, []);
 
   return (
     <div
       ref={parentRef}
-      className="flex min-h-0 w-full flex-1 items-start justify-center"
+      className="flex min-h-0 w-full flex-1 items-center justify-center"
     >
-      <div className="flex w-full justify-center" style={{ height: fit.height || undefined }}>
+      <div
+        className="flex w-full justify-center perspective-[2000px] perspective-origin-[50%_72%]"
+        style={{ height: fit.height || undefined }}
+      >
+        {/*
+          iOS: zoom the 3D scene (zoom does not flatten preserve-3d).
+          Desktop: transform scale, with preserve-3d so the lid still projects.
+        */}
         <div
-          ref={contentRef}
-          className={className}
-          style={{
-            transform: `scale(${fit.scale})`,
-            transformOrigin: "top center",
-            width: "100%",
-          }}
+          className="w-full transform-3d"
+          style={
+            fit.zoom
+              ? { zoom: fit.scale }
+              : {
+                  transform: `scale(${fit.scale})`,
+                  transformOrigin: "top center",
+                }
+          }
         >
-          {children}
+          <div ref={contentRef} className={className} style={{ width: "100%" }}>
+            {children}
+          </div>
         </div>
       </div>
     </div>
@@ -246,27 +263,23 @@ function Laptop({
   screen: ReactNode;
 }) {
   return (
-    <div
-      className="relative mx-auto max-md:perspective-none md:perspective-[2000px] md:perspective-origin-[50%_72%]"
-    >
-      {/* Lid — 3D open is desktop-only. On iPhone rotateX shears into a
-          giant trapezoid that slides under the nav. */}
-      <div className="max-md:transform-none md:transform-3d">
+    <div className="relative mx-auto perspective-[2000px] perspective-origin-[50%_72%]">
+      <div className="transform-3d">
         <motion.div
           style={{
             rotateX: lidAngle,
             transformOrigin: "center bottom",
             transformStyle: "preserve-3d",
           }}
-          data-laptop-lid
           className="relative rounded-[14px] bg-[#c8c8cc]"
         >
           {/* Lid back — solid silver, same family as the deck */}
           <div
             aria-hidden
-            className="absolute inset-0 hidden rounded-[14px] border border-[#9a9a9e] md:block"
+            className="absolute inset-0 rounded-[14px] border border-[#9a9a9e]"
             style={{
               transform: "rotateX(180deg) translateZ(1px)",
+              backfaceVisibility: "hidden",
               background:
                 "linear-gradient(165deg, #e4e4e8 0%, #c8c8cc 32%, #b0b0b4 68%, #9a9a9e 100%)",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
@@ -283,7 +296,11 @@ function Laptop({
 
           {/* Display face — aluminum lip, image fills the panel */}
           <div
-            className="relative overflow-hidden rounded-[12px_12px_6px_6px] border border-[#5c5c62] bg-[#3a3a40] p-[0.5%] md:transform-[translateZ(1px)]"
+            className="relative overflow-hidden rounded-[12px_12px_6px_6px] border border-[#5c5c62] bg-[#3a3a40] p-[0.5%]"
+            style={{
+              transform: "translateZ(1px)",
+              backfaceVisibility: "hidden",
+            }}
           >
             <div className="relative aspect-[16/10.2] overflow-hidden rounded-sm bg-[#1a1d24] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
               {screen}
@@ -550,24 +567,46 @@ function KeyCap({
 function ArrowCluster({ size, gap }: { size: number; gap: number }) {
   const half = (size - gap) / 2;
   const r = Math.min(2.75, Math.max(1.5, size * 0.09));
-  const cell = (glyph: string) => (
+  const cell = (dir: "up" | "down" | "left" | "right") => (
     <div
       className="relative flex items-center justify-center border border-black/75 bg-[linear-gradient(180deg,#3f3f43,#1d1d21)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]"
       style={{ width: size, height: half, borderRadius: r }}
     >
-      <span className="text-[5px] leading-none text-white/75">{glyph}</span>
+      <ArrowGlyph dir={dir} />
     </div>
   );
 
   return (
     <div className="flex shrink-0 flex-col" style={{ gap, width: size * 3 + gap * 2 }}>
-      <div className="flex justify-center">{cell("▲")}</div>
+      <div className="flex justify-center">{cell("up")}</div>
       <div className="flex" style={{ gap }}>
-        {cell("◀")}
-        {cell("▼")}
-        {cell("▶")}
+        {cell("left")}
+        {cell("down")}
+        {cell("right")}
       </div>
     </div>
+  );
+}
+
+/** Drawn marks — iOS turns ▲◀▼▶ into emoji. */
+function ArrowGlyph({ dir }: { dir: "up" | "down" | "left" | "right" }) {
+  const rotate = { up: 0, right: 90, down: 180, left: 270 }[dir];
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 10 10"
+      className="w-[42%] text-white/75"
+      style={{ transform: `rotate(${rotate}deg)` }}
+    >
+      <path
+        d="M2.2 6.4 L5 3.4 L7.8 6.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.35"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 

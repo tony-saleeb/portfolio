@@ -334,16 +334,6 @@ body::after {
     transform: translateZ(0);
     backface-visibility: hidden;
   }
-
-  /*
-   * DeepFract lid: Framer writes rotateX as an inline transform every frame.
-   * On iPhone that shears into a giant trapezoid under the nav — flatten it.
-   */
-  [data-laptop-lid] {
-    transform: none !important;
-    rotate: none !important;
-    transform-style: flat !important;
-  }
 }
 
 /* ---------- Scrollbar ---------- */
