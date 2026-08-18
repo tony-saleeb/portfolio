@@ -17,6 +17,7 @@ export function BrandMark({ className }: { className?: string }) {
   return (
     <motion.span
       className={`relative inline-flex h-8 w-[3.55rem] items-center sm:h-9 sm:w-16 ${className ?? ""}`}
+      role="img"
       aria-label="AS"
       whileHover={animate ? { scale: 1.05 } : undefined}
       whileTap={animate ? { scale: 0.96 } : undefined}

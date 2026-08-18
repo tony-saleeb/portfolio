@@ -13,6 +13,8 @@ describe("Contact", () => {
     );
     expect(screen.getByText("tonysaleeb23@gmail.com")).toBeInTheDocument();
     expect(screen.getByText("github.com/tony-saleeb")).toBeInTheDocument();
+    expect(screen.getByText(/Cairo/)).toBeInTheDocument();
+    expect(screen.getByText(/Available for roles/)).toBeInTheDocument();
   });
 
   it("has no obvious accessibility violations", async () => {
