@@ -12,9 +12,11 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 export function ProjectGallery({
   title,
   images,
+  variant = "phone",
 }: {
   title: string;
   images: string[];
+  variant?: "phone" | "wide";
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -85,14 +87,28 @@ export function ProjectGallery({
               <RevealItem key={img} variant="scale">
                 <div
                   data-gallery-card
-                  className="group w-[62vw] shrink-0 snap-center overflow-hidden rounded-[1.75rem] border border-border-subtle bg-background-elevated p-1.5 transition-colors duration-300 hover:border-accent/40 sm:w-57.5"
+                  className={
+                    variant === "wide"
+                      ? "group w-[78vw] shrink-0 snap-center overflow-hidden rounded-2xl border border-border-subtle bg-background-elevated p-1.5 transition-colors duration-300 hover:border-accent/40 sm:w-120"
+                      : "group w-[62vw] shrink-0 snap-center overflow-hidden rounded-[1.75rem] border border-border-subtle bg-background-elevated p-1.5 transition-colors duration-300 hover:border-accent/40 sm:w-57.5"
+                  }
                 >
-                  <div className="relative aspect-[9/19.5] overflow-hidden rounded-[1.4rem]">
+                  <div
+                    className={
+                      variant === "wide"
+                        ? "relative aspect-video overflow-hidden rounded-xl"
+                        : "relative aspect-[9/19.5] overflow-hidden rounded-[1.4rem]"
+                    }
+                  >
                     <Image
                       src={img}
                       alt={`${title} screenshot ${i + 1}`}
                       fill
-                      sizes="(max-width: 640px) 62vw, 230px"
+                      sizes={
+                        variant === "wide"
+                          ? "(max-width: 640px) 78vw, 480px"
+                          : "(max-width: 640px) 62vw, 230px"
+                      }
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                   </div>

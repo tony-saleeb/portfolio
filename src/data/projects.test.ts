@@ -50,7 +50,7 @@ describe("projectsData", () => {
   it("includes the flagship and case-study slugs", () => {
     const slugs = projectsData.map((p) => p.slug);
     expect(slugs).toEqual(
-      expect.arrayContaining(["deepfract", "techtips", "bt2", "real-time-quiz-platform"])
+      expect.arrayContaining(["deepfract", "techtips", "bt2", "qlash"])
     );
   });
 
