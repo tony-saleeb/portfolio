@@ -9,9 +9,10 @@ import { GhostMark } from "@/components/motion/GhostMark";
 import { Parallax } from "@/components/motion/Parallax";
 
 function CardVisual({ project }: { project: Project }) {
-  const isScreenshot =
-    Boolean(project.cardImage) && project.cardImage !== project.image;
   const src = project.cardImage ?? project.image;
+  const asLogo =
+    project.cardFit === "contain" ||
+    (!project.cardImage && project.imageDisplay === "contain");
 
   if (!src) {
     return (
@@ -26,7 +27,7 @@ function CardVisual({ project }: { project: Project }) {
     );
   }
 
-  if (isScreenshot) {
+  if (!asLogo) {
     return (
       <Image
         src={src}
@@ -45,7 +46,9 @@ function CardVisual({ project }: { project: Project }) {
         alt={project.title}
         width={420}
         height={420}
-        className="h-[72%] w-auto max-w-[78%] object-contain drop-shadow-[0_12px_32px_color-mix(in_oklab,var(--accent)_35%,transparent)] transition-transform duration-700 group-hover:scale-[1.05]"
+        className={`${
+          project.slug === "qlash" ? "h-[56%] max-w-[60%]" : "h-[72%] max-w-[78%]"
+        } w-auto object-contain drop-shadow-[0_12px_32px_color-mix(in_oklab,var(--accent)_35%,transparent)] transition-transform duration-700 group-hover:scale-[1.05]`}
       />
     </div>
   );

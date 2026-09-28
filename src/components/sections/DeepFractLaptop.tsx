@@ -86,7 +86,7 @@ function PinnedBeat() {
           <h2 className="text-[clamp(1.5rem,3.8vw,2.25rem)] font-medium leading-[0.95] tracking-tight">
             DeepFract
           </h2>
-          <p className="mt-1 hidden max-w-md text-sm leading-snug text-foreground/55 min-[400px]:block">
+          <p className="mt-1 mb-3 hidden max-w-md text-sm leading-snug text-foreground/55 min-[400px]:block">
             Crush a full bitmap into a tiny encode — without waiting.
           </p>
         </motion.div>

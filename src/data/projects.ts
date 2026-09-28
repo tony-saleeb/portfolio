@@ -12,6 +12,8 @@ export interface Project {
   image?: string;
   /** Homepage card cover; falls back to `image` when omitted. */
   cardImage?: string;
+  /** How to paint `cardImage` on the homepage. Defaults to cover. */
+  cardFit?: "cover" | "contain";
   imageDisplay?: "cover" | "contain";
   gallery?: string[];
   /** Phone-shaped strip (default) or landscape web shots. */
@@ -63,12 +65,14 @@ export const projectsData: Project[] = [
       "Realtime: Supabase Realtime (WebSockets)",
     ],
     image: "/qlash/hero.png",
-    cardImage: "/qlash/cover.png",
+    cardImage: "/qlash.png",
+    cardFit: "contain",
     galleryVariant: "wide",
     gallery: [
       "/qlash/hero.png",
       "/qlash/player.png",
       "/qlash/host.png",
+      "/qlash/host-lobby.png",
       "/qlash/arabic-player.png",
       "/qlash/arabic-host.png",
     ],
