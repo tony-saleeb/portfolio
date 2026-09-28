@@ -22,11 +22,17 @@ describe("ProjectPage render", () => {
     expect(screen.getByText("State Management: Provider")).toBeInTheDocument();
   });
 
-  it("shows a preview placeholder when a project has no image", async () => {
+  it("renders Qlash with a live demo and screenshot gallery", async () => {
     const ui = await ProjectPage({
-      params: Promise.resolve({ slug: "real-time-quiz-platform" }),
+      params: Promise.resolve({ slug: "qlash" }),
     });
     render(ui);
-    expect(screen.getByText("Preview coming soon")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Qlash" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Live demo/i })).toHaveAttribute(
+      "href",
+      "https://qlash.vercel.app/"
+    );
+    expect(screen.getByRole("heading", { name: "Gallery" })).toBeInTheDocument();
+    expect(screen.queryByText("Preview coming soon")).not.toBeInTheDocument();
   });
 });

@@ -12,8 +12,12 @@ export interface Project {
   image?: string;
   /** Homepage card cover; falls back to `image` when omitted. */
   cardImage?: string;
+  /** How to paint `cardImage` on the homepage. Defaults to cover. */
+  cardFit?: "cover" | "contain";
   imageDisplay?: "cover" | "contain";
   gallery?: string[];
+  /** Phone-shaped strip (default) or landscape web shots. */
+  galleryVariant?: "phone" | "wide";
 }
 
 export const projectsData: Project[] = [
@@ -40,23 +44,38 @@ export const projectsData: Project[] = [
     imageDisplay: "contain"
   },
   {
-    slug: "real-time-quiz-platform",
-    title: "Real-Time Quiz Platform",
-    description: "Kahoot-style multiplayer quiz app supporting real-time synchronization for ~80 concurrent players at a live event, with live leaderboard updates.",
+    slug: "qlash",
+    title: "Qlash",
+    description:
+      "Live classroom quiz — pin in, lock answers, own the board. Real-time play for ~80 concurrent players, with English and Egyptian Arabic.",
     tags: ["Next.js", "Supabase", "Realtime", "TypeScript"],
     metric: "80 concurrent users.",
-    fullDescription: "A fully interactive, multiplayer quiz platform built for live events. The application handles high-concurrency websocket connections to sync question states, timer countdowns, and live leaderboard updates across all connected clients with minimal latency.",
+    liveUrl: "https://qlash.vercel.app/",
+    fullDescription:
+      "Qlash is a Kahoot-style classroom quiz built for the rush of a live room: players jump in with a PIN, lock answers fast, and the board updates in real time. It was proven with ~80 concurrent players at a live event. Hosts sign in to run rooms; the UI ships in English and Egyptian Arabic.",
     challenges: [
       "Handling real-time state synchronization for dozens of users simultaneously without race conditions.",
       "Optimizing Supabase Realtime subscriptions to prevent connection drops under load.",
-      "Ensuring the UI remains extremely responsive and animations are fluid during rapid state changes."
+      "Keeping the join, lock, and board UI instant during rapid state changes — including a mirrored Arabic layout.",
     ],
     architecture: [
       "Frontend: Next.js with React Server Components and Tailwind CSS",
       "State Management: Zustand & Context API",
-      "Database & Auth: Supabase (PostgreSQL)",
-      "Realtime: Supabase Realtime (WebSockets)"
-    ]
+      "Database & Auth: Supabase (PostgreSQL) with Google sign-in for hosts",
+      "Realtime: Supabase Realtime (WebSockets)",
+    ],
+    image: "/qlash/hero.png",
+    cardImage: "/qlash.png",
+    cardFit: "contain",
+    galleryVariant: "wide",
+    gallery: [
+      "/qlash/hero.png",
+      "/qlash/player.png",
+      "/qlash/host.png",
+      "/qlash/host-lobby.png",
+      "/qlash/arabic-player.png",
+      "/qlash/arabic-host.png",
+    ],
   },
   {
     slug: "techtips",

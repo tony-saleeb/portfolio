@@ -222,7 +222,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </div>
 
         {project.gallery && project.gallery.length > 0 && (
-          <ProjectGallery title={project.title} images={project.gallery} />
+          <ProjectGallery
+            title={project.title}
+            images={project.gallery}
+            variant={project.galleryVariant}
+          />
         )}
       </div>
     </div>
