@@ -21,7 +21,7 @@ export function JsonLd() {
         url,
         logo: {
           "@type": "ImageObject",
-          url: `${url}/icon-192.png`,
+          url: `${url}/as-icon.png`,
           width: 192,
           height: 192,
         },
