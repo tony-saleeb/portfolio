@@ -17,6 +17,6 @@ describe("JsonLd", () => {
     const org = data["@graph"].find((node: { "@type": string }) => node["@type"] === "Organization");
     expect(person.name).toBe(SITE_NAME);
     expect(data["@graph"][0].url).toBe(DEFAULT_SITE_URL);
-    expect(org.logo.url).toBe(`${DEFAULT_SITE_URL}/icon-192.png`);
+    expect(org.logo.url).toBe(`${DEFAULT_SITE_URL}/as-icon.png`);
   });
 });
