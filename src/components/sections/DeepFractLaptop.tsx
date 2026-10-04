@@ -13,11 +13,11 @@ import { useScrollMotion } from "@/hooks/useScrollMotion";
 import { DeepFractLogoAssemble } from "@/components/sections/DeepFractLogoAssemble";
 
 const STAGES = [
-  { id: "input", label: "Input" },
-  { id: "attention", label: "Attention" },
-  { id: "residual", label: "Residual" },
-  { id: "quadtree", label: "Quad-tree" },
-  { id: "encoded", label: "Encoded" },
+  { id: "input", label: "Input", note: "Source frame" },
+  { id: "attention", label: "Attention", note: "Self-similarity" },
+  { id: "residual", label: "Residual", note: "Detail pass" },
+  { id: "quadtree", label: "Quad-tree", note: "Block partition" },
+  { id: "encoded", label: "Encoded", note: "Compact result" },
 ] as const;
 
 /**
@@ -92,7 +92,7 @@ function PinnedBeat() {
         </motion.div>
 
         {/* Laptop is centered in the leftover viewport; HUD sits on the bottom. */}
-        <div className="relative z-1 mx-auto flex min-h-0 w-full max-w-120 flex-1 flex-col pb-12 md:pb-14">
+        <div className="relative z-1 mx-auto flex min-h-0 w-full max-w-120 flex-1 flex-col pb-36 md:pb-32">
           <FitScale className="flex w-full flex-col items-center">
             <div className="w-full max-md:max-w-[22.5rem] transform-3d">
               <Laptop
@@ -124,7 +124,7 @@ function PinnedBeat() {
 
           <motion.div
             style={{ opacity: hudOpacity }}
-            className="pointer-events-none absolute inset-x-0 bottom-1 z-2 w-full rounded-full border border-border-subtle bg-background/90 px-4 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:bottom-2 md:backdrop-blur-md"
+            className="pointer-events-none absolute inset-x-0 bottom-1 z-2 w-full rounded-2xl border border-border-subtle bg-background/95 px-3.5 py-3 shadow-[0_16px_40px_rgba(0,0,0,0.22)] md:bottom-2 md:backdrop-blur-md"
           >
             <StageList stage={stage} />
           </motion.div>
@@ -782,31 +782,67 @@ function QuadTree() {
 }
 
 function StageList({ stage }: { stage: number }) {
+  const current = STAGES[stage] ?? STAGES[0];
+
   return (
-    <ol className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 font-mono text-[9px] uppercase tracking-[0.14em] sm:text-[10px]">
-      {STAGES.map((s, i) => {
-        const active = i === stage;
-        const done = i < stage;
-        return (
-          <li
-            key={s.id}
-            className={`flex items-center gap-1.5 transition-colors duration-300 ${
-              active ? "text-accent" : done ? "text-foreground/50" : "text-foreground/25"
-            }`}
-          >
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${
-                active
-                  ? "bg-accent-glow shadow-[0_0_8px_var(--accent-glow)]"
-                  : done
-                    ? "bg-accent/55"
-                    : "bg-border-strong"
-              }`}
-            />
-            {s.label}
-          </li>
-        );
-      })}
-    </ol>
+    <div>
+      <div className="mb-2.5 flex items-baseline justify-between gap-3">
+        <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-foreground/40">
+          Encode path
+        </p>
+        <p className="font-mono text-[9px] tabular-nums tracking-[0.14em] text-accent">
+          {String(stage + 1).padStart(2, "0")}
+          <span className="text-foreground/28">
+            {" "}
+            / {String(STAGES.length).padStart(2, "0")}
+          </span>
+        </p>
+      </div>
+
+      <ol className="grid grid-cols-5">
+        {STAGES.map((s, i) => {
+          const active = i === stage;
+          const done = i < stage;
+          return (
+            <li
+              key={s.id}
+              aria-current={active ? "step" : undefined}
+              className="relative min-w-0"
+            >
+              <div className="relative flex h-3.5 items-center justify-center">
+                {i > 0 && (
+                  <span
+                    aria-hidden
+                    className={`absolute top-1/2 right-1/2 left-[-50%] h-px -translate-y-1/2 ${
+                      i <= stage ? "bg-accent" : "bg-foreground/12"
+                    }`}
+                  />
+                )}
+                <span
+                  className={`relative z-1 rounded-full transition-all duration-300 ${
+                    active
+                      ? "h-2.5 w-2.5 bg-accent shadow-[0_0_0_4px_color-mix(in_oklab,var(--accent)_22%,transparent),0_0_14px_var(--accent-glow)]"
+                      : done
+                        ? "h-1.5 w-1.5 bg-accent"
+                        : "h-1.5 w-1.5 border border-foreground/25 bg-background"
+                  }`}
+                />
+              </div>
+              <p
+                className={`mt-1.5 truncate text-center font-mono text-[8px] uppercase tracking-[0.06em] transition-colors duration-300 sm:text-[9px] sm:tracking-[0.1em] ${
+                  active ? "text-accent" : done ? "text-foreground/55" : "text-foreground/28"
+                }`}
+              >
+                {s.label}
+              </p>
+            </li>
+          );
+        })}
+      </ol>
+
+      <p className="mt-2 text-center font-mono text-[9px] uppercase tracking-[0.18em] text-foreground/45">
+        {current.note}
+      </p>
+    </div>
   );
 }
