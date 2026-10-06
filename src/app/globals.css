@@ -284,10 +284,57 @@ body::after {
  * via framer-motion's useReducedMotion, which resolves them to their final
  * state instead of animating.
  */
+@keyframes df-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.df-float {
+  animation: df-float 8.5s ease-in-out infinite;
+}
+
+@keyframes df-lattice {
+  from { background-position: 0 0; }
+  to { background-position: 13px 26px; }
+}
+
+.df-lattice {
+  animation: df-lattice 22s linear infinite;
+}
+
+@keyframes df-node {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+.df-node {
+  animation: df-node 5.5s ease-in-out infinite;
+}
+
+/* A glow that visits one cell at a time. Not a sweeping bar. */
+@keyframes df-signal {
+  0%, 100% { opacity: 0; }
+  8% { opacity: 1; }
+  22% { opacity: 0; }
+}
+
+.df-signal {
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    color-mix(in oklab, var(--accent-glow) 34%, transparent),
+    transparent 68%
+  );
+  animation: df-signal 14s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee,
   .animate-float,
-  .animate-pulse-ring {
+  .animate-pulse-ring,
+  .df-float,
+  .df-lattice,
+  .df-node,
+  .df-signal {
     animation: none !important;
   }
   .sheen:hover::after {
