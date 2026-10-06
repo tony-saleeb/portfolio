@@ -39,7 +39,7 @@ type Depth = {
 function StackPath({ tags }: { tags: string[] }) {
   const present = new Set(tags);
   const placed = PARTITION.filter((layer) => present.has(layer.name));
-  const used = new Set(placed.map((layer) => layer.name));
+  const used = new Set<string>(placed.map((layer) => layer.name));
   const extras = tags.filter((tag) => !used.has(tag));
   const composed = placed.length === PARTITION.length;
 
